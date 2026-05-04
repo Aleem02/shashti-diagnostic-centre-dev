@@ -1,0 +1,207 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * SHASHTI DIAGNOSTIC CENTER — Editorial Medical Luxury
+ * Palette: deep ink-teal, warm ivory, apricot accent, moss.
+ * Aesthetic: serif display, hairline rules, asymmetric editorial.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-apricot: var(--apricot);
+  --color-apricot-foreground: var(--apricot-foreground);
+  --color-moss: var(--moss);
+  --color-moss-foreground: var(--moss-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-display: "Fraunces", "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Inter", "Noto Sans Tamil", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --shadow-soft: 0 1px 2px oklch(0.25 0.05 200 / 0.06), 0 8px 28px -12px oklch(0.25 0.05 200 / 0.10);
+  --shadow-elevated: 0 1px 2px oklch(0.20 0.05 200 / 0.08), 0 24px 60px -20px oklch(0.20 0.05 200 / 0.20);
+  --shadow-glow: 0 0 0 1px oklch(0.30 0.06 195 / 0.10), 0 18px 40px -16px oklch(0.30 0.06 195 / 0.30);
+}
+
+:root {
+  --radius: 0.5rem;
+
+  /* Warm ivory canvas */
+  --background: oklch(0.975 0.012 85);
+  --foreground: oklch(0.22 0.045 200);
+
+  --card: oklch(0.99 0.008 85);
+  --card-foreground: oklch(0.22 0.045 200);
+
+  --popover: oklch(0.99 0.008 85);
+  --popover-foreground: oklch(0.22 0.045 200);
+
+  /* Deep ink-teal — primary brand */
+  --primary: oklch(0.30 0.055 195);
+  --primary-foreground: oklch(0.97 0.012 85);
+
+  --secondary: oklch(0.94 0.018 90);
+  --secondary-foreground: oklch(0.28 0.05 200);
+
+  --muted: oklch(0.93 0.014 88);
+  --muted-foreground: oklch(0.40 0.025 195);
+
+  /* Apricot — editorial accent */
+  --accent: oklch(0.78 0.12 55);
+  --accent-foreground: oklch(0.25 0.06 40);
+
+  --destructive: oklch(0.55 0.18 28);
+  --destructive-foreground: oklch(0.98 0.005 85);
+
+  --border: oklch(0.86 0.018 90);
+  --input: oklch(0.88 0.018 90);
+  --ring: oklch(0.30 0.055 195);
+
+  --ink: oklch(0.22 0.045 200);
+  --ink-foreground: oklch(0.97 0.012 85);
+  --apricot: oklch(0.78 0.12 55);
+  --apricot-foreground: oklch(0.25 0.06 40);
+  --moss: oklch(0.50 0.08 155);
+  --moss-foreground: oklch(0.98 0.012 85);
+  --success: oklch(0.55 0.10 155);
+  --success-foreground: oklch(0.98 0.012 85);
+  --warning: oklch(0.78 0.13 70);
+  --warning-foreground: oklch(0.22 0.05 70);
+
+  --gradient-ink: linear-gradient(180deg, oklch(0.26 0.055 200) 0%, oklch(0.18 0.045 200) 100%);
+  --gradient-warm: linear-gradient(180deg, oklch(0.975 0.012 85) 0%, oklch(0.95 0.025 75) 100%);
+  --gradient-apricot: linear-gradient(135deg, oklch(0.82 0.10 60) 0%, oklch(0.75 0.13 45) 100%);
+
+  --sidebar: oklch(0.97 0.012 85);
+  --sidebar-foreground: oklch(0.22 0.045 200);
+  --sidebar-primary: oklch(0.30 0.055 195);
+  --sidebar-primary-foreground: oklch(0.97 0.012 85);
+  --sidebar-accent: oklch(0.94 0.018 90);
+  --sidebar-accent-foreground: oklch(0.28 0.05 200);
+  --sidebar-border: oklch(0.86 0.018 90);
+  --sidebar-ring: oklch(0.30 0.055 195);
+}
+
+.dark {
+  --background: oklch(0.16 0.025 200);
+  --foreground: oklch(0.96 0.012 85);
+  --card: oklch(0.20 0.03 200);
+  --card-foreground: oklch(0.96 0.012 85);
+  --popover: oklch(0.20 0.03 200);
+  --popover-foreground: oklch(0.96 0.012 85);
+  --primary: oklch(0.85 0.05 90);
+  --primary-foreground: oklch(0.18 0.04 200);
+  --secondary: oklch(0.24 0.035 200);
+  --secondary-foreground: oklch(0.96 0.012 85);
+  --muted: oklch(0.24 0.035 200);
+  --muted-foreground: oklch(0.70 0.02 90);
+  --accent: oklch(0.78 0.12 55);
+  --accent-foreground: oklch(0.18 0.04 40);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.78 0.12 55);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+  /* subtle paper grain */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.15  0 0 0 0 0.18  0 0 0 0 0.20  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-ink { background-image: var(--gradient-ink); }
+  .bg-gradient-warm { background-image: var(--gradient-warm); }
+  .bg-gradient-apricot { background-image: var(--gradient-apricot); }
+  .bg-gradient-accent { background-image: var(--gradient-apricot); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-elevated { box-shadow: var(--shadow-elevated); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .text-balance { text-wrap: balance; }
+  .font-mono { font-family: var(--font-mono); }
+  .serif-italic { font-family: var(--font-display); font-style: italic; font-weight: 300; }
+  .hairline { border-color: oklch(0.22 0.045 200 / 0.18); }
+  .grain { position: relative; }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+.animate-ticker { animation: ticker 40s linear infinite; }
+.animate-rise { animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.animate-shimmer { animation: shimmer 2.4s ease-in-out infinite; }
