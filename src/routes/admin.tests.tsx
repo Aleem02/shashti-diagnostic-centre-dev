@@ -10,12 +10,13 @@ export const Route = createFileRoute("/admin/tests")({
   component: AdminTests,
 });
 
-const empty: Omit<MedicalTest, "id"> = { name: "", description: "", availability: "Both", duration: "24 hrs", category: "Blood", sampleReportUrl: "" };
+const empty: Omit<MedicalTest, "id"> = { name: "", description: "", availability: "Both", duration: "24 hrs", category: "Blood", sampleReportUrl: "", price: null as any, discountPrice: null as any };
 
 function AdminTests() {
   const [tests, setTests] = useState<MedicalTest[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<MedicalTest | null>(null);
+  const [copying, setCopying] = useState<MedicalTest | null>(null);
   const [showForm, setShowForm] = useState(false);
 
   const refresh = () => { setLoading(true); fetchTests().then((t) => { setTests(t); setLoading(false); }); };
@@ -34,7 +35,7 @@ function AdminTests() {
           <h1 className="font-display text-3xl font-bold">Medical Tests</h1>
           <p className="mt-1 text-sm text-muted-foreground">{tests.length} tests in catalog</p>
         </div>
-        <button onClick={() => { setEditing(null); setShowForm(true); }}
+        <button onClick={() => { setEditing(null); setCopying(null); setShowForm(true); }}
           className="inline-flex items-center gap-2 rounded-xl bg-gradient-accent px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-95">
           <Plus className="h-4 w-4" /> Add Test
         </button>
@@ -62,41 +63,96 @@ function AdminTests() {
                   <th className="px-5 py-3 font-semibold">Category</th>
                   <th className="px-5 py-3 font-semibold">Availability</th>
                   <th className="px-5 py-3 font-semibold">Duration</th>
+                  <th className="px-5 py-3 font-semibold">Price</th>
                   <th className="px-5 py-3 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {tests.map((t) => (
+                {tests.map((t) => {
+                  const isSample = /^\d+$/.test(t.id);
+                  return (
                   <tr key={t.id} className="border-t border-border hover:bg-secondary/30">
-                    <td className="px-5 py-3 font-medium">{t.name}</td>
+                    <td className="px-5 py-3">
+                      <div className="font-medium">{t.name}</div>
+                      {isSample && <span className="inline-block mt-0.5 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Sample</span>}
+                    </td>
                     <td className="px-5 py-3 text-muted-foreground">{t.category}</td>
                     <td className="px-5 py-3 text-muted-foreground">{t.availability}</td>
                     <td className="px-5 py-3 text-muted-foreground">{t.duration}</td>
+                    <td className="px-5 py-3 text-muted-foreground">
+                       {t.price ? (
+                         <span>
+                           {t.discountPrice ? (
+                             <>
+                               <span className="line-through opacity-50 mr-2">₹{t.price}</span>
+                               <span className="text-accent font-bold">₹{t.discountPrice}</span>
+                             </>
+                           ) : (
+                             `₹${t.price}`
+                           )}
+                         </span>
+                       ) : "-"}
+                     </td>
                     <td className="px-5 py-3 text-right">
                       <div className="inline-flex gap-1">
-                        <button onClick={() => { setEditing(t); setShowForm(true); }} disabled={!isFirebaseConfigured} className="rounded-lg p-2 text-foreground/70 hover:bg-secondary hover:text-primary disabled:opacity-40">
+                        <button 
+                          onClick={() => { 
+                            if (isSample) {
+                              setCopying(t);
+                              setEditing(null);
+                            } else {
+                              setEditing(t);
+                              setCopying(null);
+                            }
+                            setShowForm(true); 
+                          }} 
+                          disabled={!isFirebaseConfigured} 
+                          className="rounded-lg p-2 text-foreground/70 hover:bg-secondary hover:text-primary disabled:opacity-40"
+                          title={isSample ? "Create new test based on this sample" : "Edit test"}
+                        >
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => onDelete(t.id)} disabled={!isFirebaseConfigured} className="rounded-lg p-2 text-foreground/70 hover:bg-destructive/10 hover:text-destructive disabled:opacity-40">
+                        <button onClick={() => onDelete(t.id)} disabled={!isFirebaseConfigured || isSample} className="rounded-lg p-2 text-foreground/70 hover:bg-destructive/10 hover:text-destructive disabled:opacity-40">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
       )}
 
-      {showForm && <TestForm initial={editing} onClose={() => setShowForm(false)} onSaved={() => { setShowForm(false); refresh(); }} />}
+      {showForm && (
+        <TestForm 
+          initial={editing} 
+          testToCopy={copying} 
+          onClose={() => setShowForm(false)} 
+          onSaved={() => { setShowForm(false); refresh(); }} 
+        />
+      )}
     </div>
   );
 }
 
-function TestForm({ initial, onClose, onSaved }: { initial: MedicalTest | null; onClose: () => void; onSaved: () => void }) {
-  const [data, setData] = useState<Omit<MedicalTest, "id">>(initial ? { name: initial.name, description: initial.description, availability: initial.availability, duration: initial.duration, category: initial.category, sampleReportUrl: initial.sampleReportUrl || "" } : empty);
+function TestForm({ initial, testToCopy, onClose, onSaved }: { initial: MedicalTest | null; testToCopy?: MedicalTest | null; onClose: () => void; onSaved: () => void }) {
+  const [data, setData] = useState<Omit<MedicalTest, "id">>(() => {
+    const source = initial || testToCopy;
+    return source ? { 
+      name: source.name, 
+      description: source.description, 
+      availability: source.availability, 
+      duration: source.duration, 
+      category: source.category, 
+      sampleReportUrl: source.sampleReportUrl || "",
+      sampleReportUrl: source.sampleReportUrl || "",
+      price: source.price ?? null,
+      discountPrice: source.discountPrice ?? null
+    } : empty;
+  });
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -111,9 +167,15 @@ function TestForm({ initial, onClose, onSaved }: { initial: MedicalTest | null; 
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault(); setBusy(true); setError("");
+    
+    // Remove undefined values, but KEEP nulls (to clear fields in Firestore)
+    const cleanData = Object.fromEntries(
+      Object.entries(data).filter(([_, v]) => v !== undefined)
+    );
+
     try {
-      if (initial) await updateTest(initial.id, data);
-      else await addTest(data);
+      if (initial) await updateTest(initial.id, cleanData as any);
+      else await addTest(cleanData as any);
       onSaved();
     } catch (err) { setError(err instanceof Error ? err.message : "Save failed"); }
     finally { setBusy(false); }
@@ -123,7 +185,9 @@ function TestForm({ initial, onClose, onSaved }: { initial: MedicalTest | null; 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 backdrop-blur-sm p-4">
       <div className="w-full max-w-lg rounded-3xl border border-border bg-card shadow-elevated max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-border p-5">
-          <h2 className="font-display text-lg font-bold">{initial ? "Edit Test" : "Add Test"}</h2>
+          <h2 className="font-display text-lg font-bold">
+            {initial ? "Edit Test" : testToCopy ? "Create from Sample" : "Add Test"}
+          </h2>
           <button onClick={onClose} className="rounded-lg p-2 hover:bg-secondary"><X className="h-4 w-4" /></button>
         </div>
         <form onSubmit={onSubmit} className="p-5 space-y-4">
@@ -142,6 +206,14 @@ function TestForm({ initial, onClose, onSaved }: { initial: MedicalTest | null; 
               {["Blood", "Thyroid", "ECG", "EEG", "Allergy"].map((c) => <option key={c} value={c}>{c}</option>)}
             </select>
           </Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Price (Optional)">
+              <input type="number" value={data.price ?? ""} onChange={(e) => setData({ ...data, price: e.target.value ? Number(e.target.value) : null as any })} className={inputCls} placeholder="e.g. 500" />
+            </Field>
+            <Field label="Discount Price (Optional)">
+              <input type="number" value={data.discountPrice ?? ""} onChange={(e) => setData({ ...data, discountPrice: e.target.value ? Number(e.target.value) : null as any })} className={inputCls} placeholder="e.g. 450" />
+            </Field>
+          </div>
           {error && <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</div>}
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold hover:bg-secondary">Cancel</button>

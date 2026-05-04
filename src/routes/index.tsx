@@ -3,6 +3,7 @@ import { ArrowUpRight, Plus } from "lucide-react";
 import heroImage from "@/assets/hero-editorial.jpg";
 import { TESTIMONIALS } from "@/lib/seed-data";
 import { CONTACT_PHONE } from "@/lib/contact";
+import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,12 +42,17 @@ function HomePage() {
       <section className="relative overflow-hidden bg-gradient-warm">
 
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-20 lg:pt-10 lg:pb-32">
-          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-            <div className="lg:col-span-7 flex flex-col justify-end animate-rise">
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 lg:items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
+              className="lg:col-span-7 flex flex-col justify-center"
+            >
               <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
                 A Diagnostic Gallery · Est. 2014
               </div>
-                <h1 className="mt-6 font-display text-[44px] sm:text-7xl lg:text-[8.5rem] leading-[0.92] tracking-[-0.04em] text-foreground text-balance">
+                <h1 className="mt-6 font-display text-[40px] sm:text-6xl lg:text-[5.5rem] leading-[0.95] tracking-[-0.03em] text-foreground text-balance">
                   Precision,<br />
                   <span className="serif-italic font-light">delivered with</span><br />
                   <span className="relative inline-block">
@@ -56,7 +62,7 @@ function HomePage() {
                     </svg>
                   </span><span className="text-accent">.</span>
                 </h1>
-                <div className="mt-4 font-sans text-sm font-medium text-accent/80 tracking-wide">
+                <div className="mt-4 font-sans text-sm font-medium text-foreground tracking-wide">
                   துல்லியமான பரிசோதனை, கனிவான கவனிப்பு.
                 </div>
               <p className="mt-8 max-w-lg text-[15px] sm:text-base text-muted-foreground leading-relaxed">
@@ -71,9 +77,14 @@ function HomePage() {
                   Book Home Collection
                 </Link>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="lg:col-span-5 relative animate-rise mt-12 lg:mt-0">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1], delay: 0.2 }}
+              className="lg:col-span-5 relative mt-12 lg:mt-0"
+            >
               <div className="relative">
                 <div className="absolute -top-3 -left-3 h-3 w-3 border-l border-t border-foreground/30" />
                 <div className="absolute -top-3 -right-3 h-3 w-3 border-r border-t border-foreground/30" />
@@ -92,7 +103,7 @@ function HomePage() {
                   <span>Hematology Suite</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
 
@@ -111,13 +122,25 @@ function HomePage() {
       {/* ── ETHOS / STATS ──────────────────────────────── */}
       <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-24 lg:py-32">
         <div className="grid gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="lg:col-span-4"
+          >
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">§ 02 · About</div>
             <h2 className="mt-5 font-display text-4xl lg:text-5xl leading-[1.05] tracking-tight">
               Diagnostics held<br /><span className="serif-italic">to a higher</span><br />standard.
             </h2>
-          </div>
-          <div className="lg:col-span-8">
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="lg:col-span-8"
+          >
             <p className="font-display text-2xl lg:text-3xl leading-snug text-foreground/85 max-w-2xl">
               We believe a medical report should be <span className="serif-italic text-accent">unambiguous</span>, the experience <span className="serif-italic">unhurried</span>, and the science <span className="serif-italic">unimpeachable</span>. Every sample is processed by trained technicians and reviewed by certified pathologists.
             </p>
@@ -129,27 +152,32 @@ function HomePage() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ── SERVICES INDEX ─────────────────────────────── */}
       <section className="bg-foreground text-background py-24 lg:py-32">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
+          >
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-background/55">§ 03 · The Index</div>
               <h2 className="mt-5 font-display text-4xl lg:text-6xl leading-[1] tracking-tight">
                 A complete<br /><span className="serif-italic text-accent">menu of care</span>.
               </h2>
-              <div className="mt-2 font-sans text-xs font-medium text-muted-foreground/60 tracking-wide uppercase">
+              <div className="mt-2 font-sans text-xs font-medium text-background/80 tracking-wide uppercase">
                 அனைத்து வகையான மருத்துவ பரிசோதனைகளும் ஒரே இடத்தில்.
               </div>
             </div>
             <Link to="/services" className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-background/80 hover:text-accent">
               View full catalogue <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
             </Link>
-          </div>
+          </motion.div>
 
           <div className="mt-16 border-t border-background/15">
             {services.map((s) => (
@@ -211,7 +239,7 @@ function HomePage() {
               <h2 className="mt-5 font-display text-4xl sm:text-5xl lg:text-7xl leading-[0.98] tracking-tight">
                 Let us begin<br /><span className="serif-italic">with a single</span><br />sample<span className="text-accent">.</span>
               </h2>
-              <div className="mt-4 font-sans text-sm font-medium text-accent-foreground/60 tracking-wide italic">
+              <div className="mt-4 font-sans text-sm font-medium text-accent-foreground tracking-wide italic">
                 ஒருமுறை எங்களை அணுகுங்கள், எங்கள் சேவையை நீங்களே உணர்வீர்கள்.
               </div>
             </div>

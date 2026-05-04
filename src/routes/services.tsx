@@ -4,8 +4,18 @@ import { fetchTests } from "@/lib/tests-service";
 import { TEST_CATEGORIES, type MedicalTest } from "@/lib/seed-data";
 import { Search, Loader2, FileText, ArrowUpRight, Home, Building2, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getWhatsAppLink } from "@/lib/contact";
+import { motion, AnimatePresence } from "framer-motion";
+
+import { z } from "zod";
+
+const testSearchSchema = z.object({
+  q: z.string().optional(),
+  category: z.string().optional(),
+});
 
 export const Route = createFileRoute("/services")({
+  validateSearch: (search) => testSearchSchema.parse(search),
   head: () => ({
     meta: [
       { title: "Services & Catalogue — Shashti Diagnostic Center" },
@@ -18,11 +28,25 @@ export const Route = createFileRoute("/services")({
 });
 
 function ServicesPage() {
+  const { q = "", category: urlCategory = "All" } = Route.useSearch();
+  const navigate = Route.useNavigate();
   const [tests, setTests] = useState<MedicalTest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [category, setCategory] = useState("All");
   const [homeOnly, setHomeOnly] = useState(false);
-  const [query, setQuery] = useState("");
+
+  const setQuery = (newQuery: string) => {
+    navigate({ search: (prev) => ({ ...prev, q: newQuery || undefined }) });
+  };
+
+  const setCategory = (newCat: string) => {
+    navigate({ 
+      search: (prev) => ({ 
+        ...prev, 
+        category: newCat === "All" ? undefined : newCat,
+        q: newCat === "All" ? undefined : prev.q 
+      }) 
+    });
+  };
 
   useEffect(() => {
     fetchTests().then((t) => { setTests(t); setLoading(false); });
@@ -30,12 +54,12 @@ function ServicesPage() {
 
   const filtered = useMemo(() => {
     return tests.filter((t) => {
-      if (category !== "All" && t.category !== category) return false;
+      if (urlCategory !== "All" && t.category !== urlCategory) return false;
       if (homeOnly && t.availability === "Lab") return false;
-      if (query && !t.name.toLowerCase().includes(query.toLowerCase())) return false;
+      if (q && !t.name.toLowerCase().includes(q.toLowerCase())) return false;
       return true;
     });
-  }, [tests, category, homeOnly, query]);
+  }, [tests, urlCategory, homeOnly, q]);
 
   return (
     <div className="relative">
@@ -43,13 +67,13 @@ function ServicesPage() {
       <section className="bg-gradient-warm">
 
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-16 lg:pt-10 lg:pb-24">
-          <h1 className="font-display text-5xl sm:text-7xl lg:text-[8rem] leading-[0.92] tracking-[-0.035em]">
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-[5.5rem] leading-[0.95] tracking-[-0.035em]">
             The<br /><span className="serif-italic">Catalogue</span><span className="text-accent">.</span>
           </h1>
           <p className="mt-8 max-w-2xl text-base text-muted-foreground leading-relaxed">
             A curated index of every diagnostic procedure offered at Shashti — with transparent timelines and availability for your reference.
           </p>
-          <div className="mt-4 font-sans text-sm font-medium text-accent/80 tracking-wide uppercase">
+          <div className="mt-4 font-sans text-sm font-medium text-foreground tracking-wide uppercase">
             பரிசோதனைகளின் பட்டியல் மற்றும் விவரங்கள்.
           </div>
           <div className="mt-8 flex flex-wrap gap-6 border-t hairline pt-8">
@@ -72,7 +96,7 @@ function ServicesPage() {
             <div className="relative w-full lg:max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
-                value={query}
+                value={q}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search the catalogue…"
                 className="w-full rounded-full border hairline bg-background pl-10 pr-4 py-2.5 text-sm font-display italic placeholder:text-muted-foreground focus:outline-none focus:border-foreground"
@@ -85,7 +109,7 @@ function ServicesPage() {
                   onClick={() => setCategory(c)}
                   className={cn(
                     "rounded-full px-4 py-1.5 text-[12px] font-sans font-medium uppercase tracking-wider border transition-colors",
-                    category === c ? "bg-foreground text-background border-foreground" : "border-foreground/15 text-foreground/70 hover:border-foreground/50"
+                    urlCategory === c ? "bg-foreground text-background border-foreground" : "border-foreground/15 text-foreground/70 hover:border-foreground/50"
                   )}
                 >
                   {c}
@@ -109,9 +133,17 @@ function ServicesPage() {
             No entries match your inquiry.
           </div>
         ) : (
-          <div className="border-t hairline">
-            {filtered.map((t, i) => (
-              <article key={t.id} className="group grid grid-cols-12 items-start gap-4 border-b hairline py-8 transition-colors hover:bg-secondary/40">
+          <div className="border-t hairline overflow-hidden">
+            <AnimatePresence mode="popLayout">
+              {filtered.map((t, i) => (
+                <motion.article 
+                  key={t.id} 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.3) }}
+                  className="group grid grid-cols-12 items-start gap-4 border-b hairline py-8 transition-colors hover:bg-secondary/40"
+                >
                 <div className="col-span-2 sm:col-span-1 font-mono text-xs text-muted-foreground pt-1">
                   {(i + 1).toString().padStart(2, "0")}
                 </div>
@@ -136,13 +168,34 @@ function ServicesPage() {
                         <Building2 className="h-3 w-3" /> In-Lab Only
                       </span>
                     ) : null}
+                    {t.price && (
+                      <span className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider border border-accent/30 bg-accent/5 px-2.5 py-1 text-accent">
+                        {t.discountPrice ? (
+                          <>
+                            <span className="line-through opacity-50 mr-1.5">₹{t.price}</span>
+                            <span className="font-bold">₹{t.discountPrice}</span>
+                          </>
+                        ) : (
+                          `₹${t.price}`
+                        )}
+                      </span>
+                    )}
                     <span className="inline-flex items-center gap-1.5 font-sans text-[11px] font-semibold uppercase tracking-wider rounded-none px-2.5 py-1 bg-foreground text-background">
                       <Clock className="h-3 w-3" /> Report: {t.duration}
                     </span>
+                    <a 
+                      href={getWhatsAppLink(`Hello Shashti Diagnostic Center, I would like to book the ${t.name} test.`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 font-sans text-[11px] font-bold uppercase tracking-wider rounded-none px-3 py-1 bg-accent text-accent-foreground hover:bg-foreground hover:text-background transition-colors"
+                    >
+                      Book Now
+                    </a>
                   </div>
                 </div>
-              </article>
-            ))}
+                </motion.article>
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </section>

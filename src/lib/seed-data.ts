@@ -9,6 +9,8 @@ export interface MedicalTest {
   duration: string;
   category: string;
   sampleReportUrl?: string;
+  price?: number;
+  discountPrice?: number;
 }
 
 export interface GalleryImage {

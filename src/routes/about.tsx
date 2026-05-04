@@ -27,7 +27,7 @@ function AboutPage() {
       {/* Header */}
       <section className="bg-gradient-warm">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-16 lg:pt-10 lg:pb-20">
-          <h1 className="font-display text-5xl sm:text-7xl lg:text-[8rem] leading-[0.92] tracking-[-0.035em] max-w-5xl">
+          <h1 className="font-display text-4xl sm:text-6xl lg:text-[5.5rem] leading-[0.95] tracking-[-0.035em] max-w-5xl">
             A diagnostic<br /><span className="serif-italic">partner you can</span><br />trust<span className="text-accent">.</span>
           </h1>
           <div className="mt-10 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">

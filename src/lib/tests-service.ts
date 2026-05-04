@@ -7,7 +7,12 @@ export async function fetchTests(): Promise<MedicalTest[]> {
   try {
     const snap = await getDocs(collection(db, "tests"));
     const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MedicalTest, "id">) }));
-    return items.length ? items : SEED_TESTS;
+    
+    // Merge database items with samples, but remove samples that have been "copied" (same name)
+    const dbNames = new Set(items.map(i => i.name.toLowerCase()));
+    const uniqueSamples = SEED_TESTS.filter(s => !dbNames.has(s.name.toLowerCase()));
+    
+    return [...items, ...uniqueSamples];
   } catch {
     return SEED_TESTS;
   }
@@ -31,7 +36,7 @@ export async function fetchGallery(): Promise<GalleryImage[]> {
   try {
     const snap = await getDocs(collection(db, "gallery"));
     const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<GalleryImage, "id">) }));
-    return items.length ? items : SEED_GALLERY;
+    return [...items, ...SEED_GALLERY];
   } catch {
     return SEED_GALLERY;
   }
