@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { CONTACT_PHONE } from "@/lib/contact";
+import { useLanguage } from "@/lib/i18n.tsx";
 
 export function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="relative mt-32 bg-foreground text-background">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8 py-20">
@@ -15,11 +17,11 @@ export function Footer() {
                 Shashti<span className="serif-italic text-accent">.</span>
               </h2>
               <p className="mt-5 max-w-md text-sm text-background/65 leading-relaxed">
-                A precision diagnostic atelier rooted in Chidambaram. Trusted by physicians, families, and night-shift emergencies for over a decade.
+                {t("footer_desc")}
               </p>
             </div>
-            <Link to="/contact" className="group inline-flex items-center gap-3 rounded-full border border-background/30 px-6 py-3 text-xs font-mono uppercase tracking-wider hover:bg-background hover:text-foreground transition-colors">
-              Begin a consultation <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
+            <Link to="/contact" className="group inline-flex items-center gap-3 rounded-full border border-background/30 px-6 py-3 text-xs font-mono uppercase tracking-wider hover:bg-background hover:text-foreground transition-colors cursor-pointer">
+              {t("cta_schedule")} <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
             </Link>
           </div>
         </div>
@@ -44,20 +46,20 @@ export function Footer() {
             <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">C · Wander</div>
             <ul className="mt-4 space-y-2 text-sm">
               {[
-                { to: "/services", label: "Services" },
-                { to: "/gallery", label: "Gallery" },
-                { to: "/about", label: "About" },
-                { to: "/contact", label: "Visit" },
-                { to: "/admin", label: "Admin" },
+                { to: "/services", label: t("nav_services") },
+                { to: "/gallery", label: t("nav_gallery") },
+                { to: "/about", label: t("nav_about") },
+                { to: "/contact", label: t("nav_contact") },
+                { to: "/admin", label: t("nav_admin") },
               ].map((l) => (
-                <li key={l.to}><Link to={l.to} className="text-background/85 hover:text-accent">{l.label}</Link></li>
+                <li key={l.to}><Link to={l.to} className="text-background/85 hover:text-accent cursor-pointer">{l.label}</Link></li>
               ))}
             </ul>
           </div>
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">D · Promise</div>
             <p className="mt-4 text-sm text-background/85 leading-relaxed">
-              Same-day reports. Doorstep collection. No hidden charges.
+              {t("footer_promise") || "Same-day reports. Doorstep collection. No hidden charges."}
             </p>
           </div>
         </div>

@@ -11,12 +11,28 @@ export interface MedicalTest {
   sampleReportUrl?: string;
   price?: number;
   discountPrice?: number;
+  hidePrice?: boolean;
 }
 
 export interface GalleryImage {
   id: string;
   url: string;
   caption?: string;
+}
+
+export interface PatientUser {
+  phone: string; // document ID
+  pinHash: string;
+  createdAt: any;
+}
+
+export interface PatientReport {
+  id: string;
+  phone: string;
+  patientName: string;
+  testName: string;
+  reportUrl: string;
+  createdAt: any;
 }
 
 export const SEED_TESTS: MedicalTest[] = [

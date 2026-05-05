@@ -1,11 +1,13 @@
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
-import { db, isFirebaseConfigured } from "./firebase";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, getDoc, query, limit } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
+import { db, storage, isFirebaseConfigured } from "./firebase";
 import { SEED_TESTS, SEED_GALLERY, type MedicalTest, type GalleryImage } from "./seed-data";
 
 export async function fetchTests(): Promise<MedicalTest[]> {
   if (!isFirebaseConfigured || !db) return SEED_TESTS;
   try {
-    const snap = await getDocs(collection(db, "tests"));
+    const q = query(collection(db, "tests"), limit(100));
+    const snap = await getDocs(q);
     const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<MedicalTest, "id">) }));
     
     // Merge database items with samples, but remove samples that have been "copied" (same name)
@@ -27,14 +29,31 @@ export async function updateTest(id: string, data: Partial<MedicalTest>) {
   return updateDoc(doc(db, "tests", id), data);
 }
 export async function deleteTest(id: string) {
-  if (!db) throw new Error("Firebase not configured");
-  return deleteDoc(doc(db, "tests", id));
+  if (!db || !storage) throw new Error("Firebase not configured");
+  
+  const docRef = doc(db, "tests", id);
+  const snap = await getDoc(docRef);
+  
+  if (snap.exists()) {
+    const data = snap.data();
+    if (data.sampleReportUrl && data.sampleReportUrl.includes("firebasestorage")) {
+      try {
+        const fileRef = ref(storage, data.sampleReportUrl);
+        await deleteObject(fileRef);
+      } catch (err) {
+        console.error("Failed to delete sample report from storage:", err);
+      }
+    }
+  }
+
+  return deleteDoc(docRef);
 }
 
 export async function fetchGallery(): Promise<GalleryImage[]> {
   if (!isFirebaseConfigured || !db) return SEED_GALLERY;
   try {
-    const snap = await getDocs(collection(db, "gallery"));
+    const q = query(collection(db, "gallery"), limit(50));
+    const snap = await getDocs(q);
     const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<GalleryImage, "id">) }));
     return [...items, ...SEED_GALLERY];
   } catch {
@@ -46,8 +65,24 @@ export async function addGalleryImage(data: Omit<GalleryImage, "id">) {
   return addDoc(collection(db, "gallery"), data);
 }
 export async function deleteGalleryImage(id: string) {
-  if (!db) throw new Error("Firebase not configured");
-  return deleteDoc(doc(db, "gallery", id));
+  if (!db || !storage) throw new Error("Firebase not configured");
+  
+  const docRef = doc(db, "gallery", id);
+  const snap = await getDoc(docRef);
+  
+  if (snap.exists()) {
+    const data = snap.data();
+    if (data.url && data.url.includes("firebasestorage")) {
+      try {
+        const fileRef = ref(storage, data.url);
+        await deleteObject(fileRef);
+      } catch (err) {
+        console.error("Failed to delete gallery image from storage:", err);
+      }
+    }
+  }
+  
+  return deleteDoc(docRef);
 }
 
 export async function updateGalleryImage(id: string, data: Partial<GalleryImage>) {

@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPin, Phone, Mail, MessageCircle, ArrowUpRight } from "lucide-react";
 import { CONTACT_PHONE, getWhatsAppLink } from "@/lib/contact";
+import { useLanguage } from "@/lib/i18n.tsx";
+import { Breadcrumbs } from "@/components/SEO";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -15,21 +17,23 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const { t } = useLanguage();
   const cards = [
-    { num: "I", icon: MapPin, label: "Visit", lines: ["Laya Complex,", "S.P Kovil Street,", "Chidambaram, Tamil Nadu"], cta: { href: "https://www.google.com/maps?q=Chidambaram,Tamil+Nadu", label: "Get directions" } },
-    { num: "II", icon: Phone, label: "Call", lines: [CONTACT_PHONE, "Open 24 / 7 · 365"], cta: { href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, label: "Call now" } },
-    { num: "III", icon: Mail, label: "Write", lines: ["info@shashtidiagnostic.in", "We respond within the hour"], cta: { href: "mailto:info@shashtidiagnostic.in", label: "Send email" } },
+    { num: "I", icon: MapPin, label: t("contact_visit"), lines: ["Laya Complex,", "S.P Kovil Street,", "Chidambaram, Tamil Nadu"], cta: { href: "https://www.google.com/maps/place/SHASHTI+DIAGNOSTIC+CENTER/@11.3951255,79.6933382,17z/data=!3m1!4b1!4m6!3m5!1s0x3a54c3da9b033d09:0xca3643b5dd6846b3!8m2!3d11.3951255!4d79.6959131!16s%2Fg%2F11vwfj6r7t", label: t("contact_get_directions") } },
+    { num: "II", icon: Phone, label: t("contact_call"), lines: [CONTACT_PHONE, t("contact_open_always")], cta: { href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, label: t("contact_call_now") } },
+    { num: "III", icon: Mail, label: t("contact_write"), lines: ["info@shashtidiagnostic.in", t("contact_email_respond")], cta: { href: "mailto:info@shashtidiagnostic.in", label: t("contact_send_email") } },
   ];
 
   return (
     <div>
       <section className="bg-gradient-warm">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-16 lg:pt-10 lg:pb-20">
+          <Breadcrumbs />
           <h1 className="font-display text-4xl sm:text-6xl lg:text-[5.5rem] leading-[0.95] tracking-[-0.035em]">
-            Come<br /><span className="serif-italic">find us</span><span className="text-accent">.</span>
+            {t("contact_title_1")}<br /><span className="serif-italic">{t("contact_title_2")}</span><span className="text-accent">.</span>
           </h1>
           <p className="mt-8 max-w-xl text-base text-muted-foreground leading-relaxed">
-            Walk in any hour of the day or night. Or schedule a doorstep collection — we&rsquo;ll be there within the hour.
+            {t("contact_desc")}
           </p>
         </div>
       </section>
@@ -58,19 +62,19 @@ function ContactPage() {
         <div className="mt-12 bg-foreground text-background p-10 sm:p-14 lg:p-20">
           <div className="grid gap-10 md:grid-cols-[1fr_auto] md:items-center">
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-background/55">Fastest channel</div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-background/55">{t("contact_whatsapp_fast")}</div>
               <h2 className="mt-5 font-display text-4xl lg:text-6xl leading-[0.98] tracking-tight">
-                Or send us a<br /><span className="serif-italic text-accent">message</span>.
+                {t("contact_whatsapp_title_1") || "Or send us a"}<br /><span className="serif-italic text-accent">{t("contact_whatsapp_title_2") || "message"}</span>.
               </h2>
-              <p className="mt-5 max-w-md text-background/65">A real human will reply, day or night, usually within minutes.</p>
+              <p className="mt-5 max-w-md text-background/65">{t("contact_whatsapp_reply")}</p>
             </div>
             <a
               href={getWhatsAppLink()}
               target="_blank"
               rel="noopener noreferrer"
-              className="group inline-flex items-center justify-center gap-3 rounded-full bg-accent text-accent-foreground px-8 py-4 text-xs font-mono uppercase tracking-wider hover:bg-background hover:text-foreground transition-colors"
+              className="group inline-flex items-center justify-center gap-3 rounded-full bg-accent text-accent-foreground px-8 py-4 text-xs font-mono uppercase tracking-wider hover:bg-background hover:text-foreground transition-colors cursor-pointer"
             >
-              <MessageCircle className="h-4 w-4" /> Chat on WhatsApp <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
+              <MessageCircle className="h-4 w-4" /> {t("contact_whatsapp_btn")} <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
             </a>
           </div>
         </div>
@@ -78,16 +82,16 @@ function ContactPage() {
         {/* Map */}
         <div className="mt-12 border hairline">
           <div className="flex items-center justify-between border-b hairline px-5 py-3">
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Plate · Location</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{t("contact_plate_location")}</div>
             <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">Chidambaram, T.N.</div>
           </div>
           <iframe
             title="Shashti Diagnostic Center location"
-            src="https://www.google.com/maps?q=Chidambaram,Tamil+Nadu&output=embed"
+            src="https://www.google.com/maps?q=11.3951255,79.6959131&output=embed"
             width="100%"
             height="460"
             loading="lazy"
-            className="block w-full grayscale"
+            className="block w-full"
             referrerPolicy="no-referrer-when-downgrade"
           />
         </div>

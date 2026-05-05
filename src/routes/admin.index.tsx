@@ -28,7 +28,7 @@ function AdminDashboard() {
         {cards.map((c) => (
           <Link key={c.to} to={c.to} className="group rounded-2xl border border-border bg-card p-6 shadow-soft hover:shadow-elevated hover:border-primary/40 transition-all">
             <div className="flex items-start justify-between">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-accent shadow-glow">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-ink shadow-glow">
                 <c.icon className="h-6 w-6 text-primary-foreground" />
               </div>
               <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition" />

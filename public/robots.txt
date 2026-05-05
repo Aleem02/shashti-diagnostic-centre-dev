@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://shashtidiagnostic.in/sitemap.xml
+
+# Disallow admin panel from being indexed
+Disallow: /admin/
+Disallow: /admin

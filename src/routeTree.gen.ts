@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -17,11 +18,17 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminTestsRouteImport } from './routes/admin.tests'
+import { Route as AdminPatientsRouteImport } from './routes/admin.patients'
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -59,6 +66,11 @@ const AdminTestsRoute = AdminTestsRouteImport.update({
   path: '/tests',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPatientsRoute = AdminPatientsRouteImport.update({
+  id: '/patients',
+  path: '/patients',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminGalleryRoute = AdminGalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
@@ -71,8 +83,10 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/reports': typeof ReportsRoute
   '/services': typeof ServicesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/patients': typeof AdminPatientsRoute
   '/admin/tests': typeof AdminTestsRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -81,8 +95,10 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/reports': typeof ReportsRoute
   '/services': typeof ServicesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/patients': typeof AdminPatientsRoute
   '/admin/tests': typeof AdminTestsRoute
   '/admin': typeof AdminIndexRoute
 }
@@ -93,8 +109,10 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
+  '/reports': typeof ReportsRoute
   '/services': typeof ServicesRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/patients': typeof AdminPatientsRoute
   '/admin/tests': typeof AdminTestsRoute
   '/admin/': typeof AdminIndexRoute
 }
@@ -106,8 +124,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/gallery'
+    | '/reports'
     | '/services'
     | '/admin/gallery'
+    | '/admin/patients'
     | '/admin/tests'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -116,8 +136,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/gallery'
+    | '/reports'
     | '/services'
     | '/admin/gallery'
+    | '/admin/patients'
     | '/admin/tests'
     | '/admin'
   id:
@@ -127,8 +149,10 @@ export interface FileRouteTypes {
     | '/admin'
     | '/contact'
     | '/gallery'
+    | '/reports'
     | '/services'
     | '/admin/gallery'
+    | '/admin/patients'
     | '/admin/tests'
     | '/admin/'
   fileRoutesById: FileRoutesById
@@ -139,6 +163,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
+  ReportsRoute: typeof ReportsRoute
   ServicesRoute: typeof ServicesRoute
 }
 
@@ -149,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -200,6 +232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTestsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/patients': {
+      id: '/admin/patients'
+      path: '/patients'
+      fullPath: '/admin/patients'
+      preLoaderRoute: typeof AdminPatientsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/gallery': {
       id: '/admin/gallery'
       path: '/gallery'
@@ -212,12 +251,14 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminGalleryRoute: typeof AdminGalleryRoute
+  AdminPatientsRoute: typeof AdminPatientsRoute
   AdminTestsRoute: typeof AdminTestsRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminGalleryRoute: AdminGalleryRoute,
+  AdminPatientsRoute: AdminPatientsRoute,
   AdminTestsRoute: AdminTestsRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -230,6 +271,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
+  ReportsRoute: ReportsRoute,
   ServicesRoute: ServicesRoute,
 }
 export const routeTree = rootRouteImport

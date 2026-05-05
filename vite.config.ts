@@ -10,6 +10,17 @@ export default defineConfig({
   vite: {
     ssr: {
       noExternal: ['framer-motion', 'lucide-react']
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+            'framer-motion': ['framer-motion'],
+            'lucide': ['lucide-react']
+          }
+        }
+      }
     }
   }
 });

@@ -6,22 +6,34 @@ import { CONTACT_PHONE, getWhatsAppLink } from "@/lib/contact";
 import { fetchTests } from "@/lib/tests-service";
 import { type MedicalTest } from "@/lib/seed-data";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/lib/i18n.tsx";
 
 const links = [
   { to: "/", label: "Index", num: "01" },
   { to: "/services", label: "Services", num: "02" },
   { to: "/gallery", label: "Gallery", num: "03" },
-  { to: "/about", label: "About", num: "04" },
-  { to: "/contact", label: "Visit", num: "05" },
+  { to: "/reports", label: "Reports", num: "04" },
+  { to: "/about", label: "About", num: "05" },
+  { to: "/contact", label: "Visit", num: "06" },
 ];
 
 export function Navbar() {
+  const { language, setLanguage, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [tests, setTests] = useState<MedicalTest[]>([]);
   const [showResults, setShowResults] = useState(false);
+
+  const navLinks = [
+    { to: "/", label: t("nav_home"), num: "01" },
+    { to: "/services", label: t("nav_services"), num: "02" },
+    { to: "/gallery", label: t("nav_gallery") || "Gallery", num: "03" },
+    { to: "/reports", label: t("nav_reports"), num: "04" },
+    { to: "/about", label: t("nav_about"), num: "05" },
+    { to: "/contact", label: t("nav_contact"), num: "06" },
+  ];
 
   useEffect(() => {
     fetchTests().then(setTests);
@@ -63,6 +75,13 @@ export function Navbar() {
     setOpen(false);
   };
 
+  const handleNavLinkClick = (to: string) => {
+    if (path === to) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    setOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b hairline bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 sm:px-8">
@@ -77,22 +96,23 @@ export function Navbar() {
           </div>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-1">
-          {links.map((l) => {
+        <nav className="hidden xl:flex items-center gap-0.5">
+          {navLinks.map((l) => {
             const active = path === l.to;
             return (
               <Link
                 key={l.to}
                 to={l.to}
+                onClick={() => handleNavLinkClick(l.to)}
                 className={cn(
-                  "group/link relative px-3.5 py-2 text-sm font-medium transition-colors",
+                  "group/link relative px-2.5 py-2 text-[13px] font-medium transition-colors",
                   active ? "text-foreground" : "text-foreground/55 hover:text-foreground"
                 )}
               >
-                <span className="font-mono text-[10px] text-muted-foreground/70 mr-1.5">{l.num}</span>
+                <span className="font-mono text-[9px] text-muted-foreground/70 mr-1">{l.num}</span>
                 {l.label}
                 <span className={cn(
-                  "absolute left-3.5 right-3.5 -bottom-0.5 h-px bg-foreground origin-left transition-transform duration-300",
+                  "absolute left-2.5 right-2.5 -bottom-0.5 h-px bg-foreground origin-left transition-transform duration-300",
                   active ? "scale-x-100" : "scale-x-0 group-hover/link:scale-x-100"
                 )} />
               </Link>
@@ -101,18 +121,18 @@ export function Navbar() {
         </nav>
 
         <div className="hidden xl:block relative group search-container">
-          <form onSubmit={handleSearch} className="relative flex items-center max-w-[240px]">
+          <form onSubmit={handleSearch} className="relative flex items-center w-[140px] xl:w-[200px]">
             <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search tests..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setShowResults(true);
               }}
               onFocus={() => setShowResults(true)}
-              className="w-full rounded-full border hairline bg-background/50 pl-8 pr-3 py-1.5 text-[12px] font-sans placeholder:text-muted-foreground/60 focus:outline-none focus:border-foreground transition-all"
+              className="w-full rounded-full border hairline bg-background/50 pl-8 pr-3 py-1.5 text-[11px] font-sans placeholder:text-muted-foreground/60 focus:outline-none focus:border-foreground transition-all"
             />
           </form>
 
@@ -160,16 +180,36 @@ export function Navbar() {
           </AnimatePresence>
         </div>
 
-        <div className="hidden lg:flex items-center gap-4">
-          <a href={`tel:${CONTACT_PHONE.replace(/\s/g, "")}`} className="flex items-center gap-2 text-[12px] font-sans font-bold uppercase tracking-wide text-foreground/80 hover:text-foreground transition-colors">
-            <Phone className="h-3.5 w-3.5" /> 24/7 · {CONTACT_PHONE}
-          </a>
-          <a href={getWhatsAppLink("Hello Shashti Diagnostic Center, I would like to book a visit.")} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2 rounded-full border border-foreground bg-foreground px-5 py-2 text-xs font-medium uppercase tracking-wider text-background hover:bg-transparent hover:text-foreground transition-colors">
-            Book a Visit
-          </a>
+        <div className="flex items-center gap-3 sm:gap-6">
+          {/* Language Toggle - Visible on all screens */}
+          <div className="flex items-center gap-0.5 p-0.5 sm:gap-1 sm:p-1 rounded-full border hairline bg-secondary/20">
+            <button 
+              onClick={() => setLanguage("en")}
+              className={cn(
+                "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer",
+                language === "en" ? "bg-foreground text-background shadow-sm" : "text-foreground/40 hover:text-foreground"
+              )}
+            >EN</button>
+            <button 
+              onClick={() => setLanguage("ta")}
+              className={cn(
+                "px-2 py-0.5 sm:px-2.5 sm:py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full transition-all cursor-pointer",
+                language === "ta" ? "bg-foreground text-background shadow-sm" : "text-foreground/40 hover:text-foreground"
+              )}
+            >தமிழ்</button>
+          </div>
+
+          <div className="hidden xl:flex items-center gap-6">
+            <a href={`tel:${CONTACT_PHONE.replace(/\s/g, "")}`} className="flex items-center gap-1.5 text-[11px] font-sans font-bold uppercase tracking-wide text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap">
+              <Phone className="h-3 w-3" /> {CONTACT_PHONE}
+            </a>
+            <a href={getWhatsAppLink("Hello Shashti Diagnostic Center, I would like to book a visit.")} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2 rounded-full border border-foreground bg-foreground px-4 py-2 text-[11px] font-medium uppercase tracking-wider text-background hover:bg-transparent hover:text-foreground transition-colors whitespace-nowrap cursor-pointer">
+              {t("cta_book_visit") || "Book a Visit"}
+            </a>
+          </div>
         </div>
 
-        <button onClick={() => setOpen(!open)} className="lg:hidden rounded-full border border-foreground/20 p-2 text-foreground" aria-label="Menu">
+        <button onClick={() => setOpen(!open)} className="xl:hidden rounded-full border border-foreground/20 p-2 text-foreground" aria-label="Menu">
           {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
       </div>
@@ -180,7 +220,7 @@ export function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="lg:hidden border-t hairline bg-background overflow-hidden"
+            className="xl:hidden border-t hairline bg-background overflow-hidden"
           >
             <div className="px-5 py-4 space-y-4">
               <div className="relative search-container">
@@ -232,7 +272,8 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
               <div className="space-y-1">
-                {links.map((l, i) => (
+                <div className="pt-2"></div>
+                {navLinks.map((l, i) => (
                   <motion.div
                     key={l.to}
                     initial={{ opacity: 0, x: -10 }}
@@ -241,7 +282,7 @@ export function Navbar() {
                   >
                     <Link
                       to={l.to}
-                      onClick={() => setOpen(false)}
+                      onClick={() => handleNavLinkClick(l.to)}
                       className={cn(
                         "flex items-center justify-between border-b hairline px-1 py-3 text-sm",
                         path === l.to ? "text-foreground" : "text-foreground/65"
@@ -252,8 +293,8 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
-                <a href={getWhatsAppLink("Hello Shashti Diagnostic Center, I would like to book a visit.")} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="mt-3 block rounded-full border border-foreground bg-foreground px-4 py-2.5 text-center text-xs font-medium uppercase tracking-wider text-background">
-                  Book a Visit
+                <a href={getWhatsAppLink("Hello Shashti Diagnostic Center, I would like to book a visit.")} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="mt-3 block rounded-full border border-foreground bg-foreground px-4 py-2.5 text-center text-xs font-medium uppercase tracking-wider text-background cursor-pointer">
+                  {t("cta_book_visit") || "Book a Visit"}
                 </a>
               </div>
             </div>

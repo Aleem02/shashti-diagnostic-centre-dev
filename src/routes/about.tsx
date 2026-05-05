@@ -1,5 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from '@tanstack/react-router'
 import { MapPin, ShieldCheck, Clock, Users } from "lucide-react";
+import { useLanguage } from "@/lib/i18n.tsx";
+import { Breadcrumbs } from "@/components/SEO";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -15,20 +17,20 @@ export const Route = createFileRoute("/about")({
 
 const services = ["Allergy Panels", "Hematology", "Cardiology · ECG", "Neurology · EEG", "Endocrinology", "Lipid Profile", "Diabetes Screening", "Liver & Kidney", "Vitamin Profiles", "Wellness Suites"];
 
-const trust = [
-  { num: "I", icon: ShieldCheck, title: "No hidden charges", desc: "Transparent pricing — what you see is what you pay. Always." },
-  { num: "II", icon: Clock, title: "Reports on time", desc: "Same-day or next-day delivery, every single instance." },
-  { num: "III", icon: Users, title: "Certified pathology", desc: "Trained technicians and pathologist-reviewed reports." },
-];
-
 function AboutPage() {
+  const { t } = useLanguage();
+  const trustPillars = [
+    { num: "I", icon: ShieldCheck, title: t("pillar_1_title") || "No hidden charges", desc: t("pillar_1_desc") || "Transparent pricing — what you see is what you pay. Always." },
+    { num: "II", icon: Clock, title: t("pillar_2_title") || "Reports on time", desc: t("pillar_2_desc") || "Same-day or next-day delivery, every single instance." },
+    { num: "III", icon: Users, title: t("pillar_3_title") || "Certified pathology", desc: t("pillar_3_desc") || "Trained technicians and pathologist-reviewed reports." },
+  ];
   return (
     <div>
       {/* Header */}
       <section className="bg-gradient-warm">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-16 lg:pt-10 lg:pb-20">
           <h1 className="font-display text-4xl sm:text-6xl lg:text-[5.5rem] leading-[0.95] tracking-[-0.035em] max-w-5xl">
-            A diagnostic<br /><span className="serif-italic">partner you can</span><br />trust<span className="text-accent">.</span>
+            {t("about_title_1")}<br /><span className="serif-italic">{t("about_title_2")}</span><br />{t("about_title_3")}<span className="text-accent">.</span>
           </h1>
           <div className="mt-10 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
@@ -41,11 +43,11 @@ function AboutPage() {
       <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-24">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-3">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">A · Manifesto</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("about_manifesto_tag")}</div>
           </div>
           <div className="lg:col-span-9">
             <p className="font-display text-3xl lg:text-5xl leading-[1.15] text-foreground/90 max-w-4xl tracking-tight">
-              Shashti is a modern, full-service medical laboratory in Chidambaram. We pair <span className="serif-italic text-accent">advanced equipment</span> with <span className="serif-italic">skilled hands</span> and <span className="serif-italic">patient-first care</span> to deliver diagnostics worth your trust — anytime, day or night.
+              {t("about_manifesto_text")}
             </p>
           </div>
         </div>
@@ -55,9 +57,9 @@ function AboutPage() {
       <section className="border-y hairline bg-secondary/40 py-24">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">B · Offerings</div>
-            <h2 className="mt-4 font-display text-4xl lg:text-5xl leading-[1.05]">What we<br /><span className="serif-italic">practice</span>.</h2>
-            <p className="mt-5 text-muted-foreground max-w-sm">A comprehensive menu of diagnostics under one roof — supporting physicians and families across the region.</p>
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("about_offerings_tag")}</div>
+            <h2 className="mt-4 font-display text-4xl lg:text-5xl leading-[1.05]">{t("about_offerings_title_1")}<br /><span className="serif-italic">{t("about_offerings_title_2")}</span>.</h2>
+            <p className="mt-5 text-muted-foreground max-w-sm">{t("about_offerings_desc")}</p>
           </div>
           <div className="lg:col-span-8">
             <div className="border-t hairline">
@@ -79,18 +81,18 @@ function AboutPage() {
       <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-24">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-3">
-            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">C · Pillars</div>
-            <h2 className="mt-4 font-display text-4xl lg:text-5xl leading-[1.05]">Why patients<br /><span className="serif-italic">return</span>.</h2>
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("about_pillars_tag")}</div>
+            <h2 className="mt-4 font-display text-4xl lg:text-5xl leading-[1.05]">{t("about_pillars_title_1")}<br /><span className="serif-italic">{t("about_pillars_title_2")}</span>.</h2>
           </div>
           <div className="lg:col-span-9 grid gap-px bg-border md:grid-cols-3">
-            {trust.map((t) => (
-              <div key={t.title} className="bg-background p-8 lg:p-10">
+            {trustPillars.map((pillar) => (
+              <div key={pillar.title} className="bg-background p-8 lg:p-10">
                 <div className="flex items-center justify-between">
-                  <span className="font-display text-3xl serif-italic text-accent">{t.num}</span>
-                  <t.icon className="h-5 w-5 text-foreground/50" strokeWidth={1.5} />
+                  <span className="font-display text-3xl serif-italic text-accent">{pillar.num}</span>
+                  <pillar.icon className="h-5 w-5 text-foreground/50" strokeWidth={1.5} />
                 </div>
-                <h3 className="mt-8 font-display text-2xl leading-tight">{t.title}</h3>
-                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
+                <h3 className="mt-8 font-display text-2xl leading-tight">{pillar.title}</h3>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{pillar.desc}</p>
               </div>
             ))}
           </div>

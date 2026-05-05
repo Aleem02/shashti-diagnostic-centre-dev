@@ -1,10 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { fetchGallery, addGalleryImage, deleteGalleryImage, updateGalleryImage } from "@/lib/tests-service";
-import { uploadToCloudinary, isCloudinaryConfigured, optimizedImage } from "@/lib/cloudinary";
-import { isFirebaseConfigured } from "@/lib/firebase";
+import { isFirebaseConfigured, uploadFileToStorage } from "@/lib/firebase";
 import type { GalleryImage } from "@/lib/seed-data";
-import { Upload, Trash2, Loader2, AlertCircle, Pencil, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Upload, Trash2, Loader2, AlertCircle, Pencil, X, ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
 
 export const Route = createFileRoute("/admin/gallery")({
   component: AdminGallery,
@@ -22,11 +21,11 @@ function AdminGallery() {
 
   const onUpload = async (files: FileList | null) => {
     if (!files || !files.length) return;
-    if (!isCloudinaryConfigured || !isFirebaseConfigured) { setError("Configure Firebase + Cloudinary to upload."); return; }
+    if (!isFirebaseConfigured) { setError("Configure Firebase to upload."); return; }
     setUploading(true); setError("");
     try {
       for (const file of Array.from(files)) {
-        const { url } = await uploadToCloudinary(file);
+        const { url } = await uploadFileToStorage(file, "gallery");
         await addGalleryImage({ url, caption: file.name.replace(/\.[^.]+$/, "") });
       }
       refresh();
@@ -75,19 +74,19 @@ function AdminGallery() {
           <h1 className="font-display text-3xl font-bold">Gallery</h1>
           <p className="mt-1 text-sm text-muted-foreground">{images.length} images</p>
         </div>
-        <label className="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-gradient-accent px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-95">
+        <label className="cursor-pointer inline-flex items-center gap-2 rounded-xl bg-gradient-ink px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-95">
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
           {uploading ? "Uploading..." : "Upload Images"}
           <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => onUpload(e.target.files)} />
         </label>
       </div>
 
-      {(!isCloudinaryConfigured || !isFirebaseConfigured) && (
+      {!isFirebaseConfigured && (
         <div className="mt-6 flex gap-3 rounded-xl border border-warning/40 bg-warning/10 p-4 text-sm">
           <AlertCircle className="h-5 w-5 shrink-0 text-warning-foreground" />
           <div className="text-warning-foreground">
             <p className="font-semibold">Configuration required</p>
-            <p className="text-xs mt-1">Add credentials in <code className="rounded bg-card/60 px-1">src/lib/firebase.ts</code> and <code className="rounded bg-card/60 px-1">src/lib/cloudinary.ts</code> to enable uploads.</p>
+            <p className="text-xs mt-1">Add credentials in <code className="rounded bg-card/60 px-1">src/lib/firebase.ts</code> to enable uploads.</p>
           </div>
         </div>
       )}
@@ -99,29 +98,34 @@ function AdminGallery() {
       ) : (
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {images.map((img) => (
-            <div key={img.id} className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-soft flex flex-col">
-              <div className="relative aspect-[4/3] w-full cursor-pointer" onClick={() => setActive(img)}>
-                <img src={optimizedImage(img.url, 500)} alt={img.caption || ""} loading="lazy" className="h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-foreground/40 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-3">
-                  <div className="rounded-full bg-background/20 backdrop-blur-md p-2 text-background">
-                    <X className="h-5 w-5 rotate-45" />
+            <div key={img.id} className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-soft flex flex-col h-full">
+              <div className="relative aspect-[4/3] w-full cursor-pointer overflow-hidden bg-muted" onClick={() => setActive(img)}>
+                <img 
+                  src={img.url} 
+                  alt={img.caption || ""} 
+                  loading="lazy" 
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                />
+                <div className="absolute inset-0 bg-ink/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3">
+                  <div className="rounded-full bg-white/20 backdrop-blur-md p-3 text-white">
+                    <ImageIcon className="h-5 w-5" />
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); onDelete(img.id); }}
                     disabled={!isFirebaseConfigured}
-                    className="rounded-xl bg-destructive px-3 py-2 text-xs font-semibold text-destructive-foreground inline-flex items-center gap-1.5 disabled:opacity-50"
+                    className="rounded-full bg-destructive px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-destructive-foreground inline-flex items-center gap-1.5 hover:bg-destructive/90 transition-colors shadow-lg disabled:opacity-50 cursor-pointer"
                   >
                     <Trash2 className="h-3.5 w-3.5" /> Delete
                   </button>
                 </div>
               </div>
-              <label className="flex items-center gap-2 p-3 cursor-text hover:bg-secondary/50 transition-colors">
-                <Pencil className="h-3 w-3 text-muted-foreground shrink-0" />
+              <label className="flex items-center gap-2 p-4 cursor-pointer hover:bg-secondary/50 transition-colors mt-auto border-t border-border/50">
+                <Pencil className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 <input
                   defaultValue={img.caption || ""}
                   onBlur={(e) => onCaptionUpdate(img.id, e.target.value)}
                   placeholder="Add caption..."
-                  className="w-full bg-transparent text-xs font-medium focus:outline-none rounded px-1 py-0.5 cursor-text"
+                  className="w-full bg-transparent text-[11px] font-bold uppercase tracking-wider focus:outline-none rounded px-1 py-0.5 cursor-pointer text-foreground/80"
                 />
               </label>
             </div>
@@ -157,7 +161,7 @@ function AdminGallery() {
 
           <div className="relative flex flex-col items-center max-w-[90vw] lg:max-w-[75vw]" onClick={(e) => e.stopPropagation()}>
             <img
-              src={optimizedImage(active.url, 1800)}
+              src={active.url}
               alt={active.caption || "Preview"}
               className="max-h-[80vh] w-auto object-contain shadow-2xl border-4 border-background/10 rounded-sm"
             />

@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { fetchGallery } from "@/lib/tests-service";
-import { optimizedImage } from "@/lib/cloudinary";
 import type { GalleryImage } from "@/lib/seed-data";
 import { X, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n.tsx";
+import { Breadcrumbs } from "@/components/SEO";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
+  const { t } = useLanguage();
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState<GalleryImage | null>(null);
@@ -53,11 +55,12 @@ function GalleryPage() {
     <div>
       <section className="bg-gradient-warm">
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-16 lg:pt-10 lg:pb-20">
+          <Breadcrumbs />
           <h1 className="font-display text-5xl sm:text-7xl lg:text-[8rem] leading-[0.92] tracking-[-0.035em]">
-            Inside<br /><span className="serif-italic">the gallery</span><span className="text-accent">.</span>
+            {t("gallery_tag_1")}<br /><span className="serif-italic">{t("gallery_tag_2")}</span><span className="text-accent">.</span>
           </h1>
           <p className="mt-8 max-w-xl text-base text-muted-foreground leading-relaxed">
-            A visual register of our diagnostic suites, instruments and the people who keep Shashti running through the night.
+            {t("gallery_page_desc")}
           </p>
         </div>
       </section>
@@ -71,10 +74,10 @@ function GalleryPage() {
               <button
                 key={img.id}
                 onClick={() => setActive(img)}
-                className="group relative overflow-hidden bg-secondary aspect-[4/3] border hairline"
+                className="group relative overflow-hidden bg-secondary aspect-[4/3] border hairline cursor-pointer"
               >
                 <img
-                  src={optimizedImage(img.url, 900)}
+                  src={img.url}
                   alt={img.caption || "Gallery image"}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
@@ -118,7 +121,7 @@ function GalleryPage() {
 
           <div className="relative flex flex-col items-center max-w-[90vw] lg:max-w-[75vw]" onClick={(e) => e.stopPropagation()}>
             <img
-              src={optimizedImage(active.url, 1800)}
+              src={active.url}
               alt={active.caption || "Preview"}
               className="max-h-[80vh] w-auto object-contain shadow-2xl border-4 border-background/10 rounded-sm"
             />

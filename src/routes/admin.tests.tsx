@@ -1,16 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { fetchTests, addTest, updateTest, deleteTest } from "@/lib/tests-service";
-import { uploadToCloudinary, isCloudinaryConfigured } from "@/lib/cloudinary";
-import { isFirebaseConfigured } from "@/lib/firebase";
+import { isFirebaseConfigured, uploadFileToStorage } from "@/lib/firebase";
+
 import type { MedicalTest, Availability } from "@/lib/seed-data";
-import { Plus, Pencil, Trash2, Loader2, X, Upload, AlertCircle, FileText } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, X, Upload, AlertCircle, FileText, Copy } from "lucide-react";
 
 export const Route = createFileRoute("/admin/tests")({
   component: AdminTests,
 });
 
-const empty: Omit<MedicalTest, "id"> = { name: "", description: "", availability: "Both", duration: "24 hrs", category: "Blood", sampleReportUrl: "", price: null as any, discountPrice: null as any };
+const empty: Omit<MedicalTest, "id"> = { name: "", description: "", availability: "Both", duration: "24 hrs", category: "Blood", sampleReportUrl: "", price: null as any, discountPrice: null as any, hidePrice: false };
 
 function AdminTests() {
   const [tests, setTests] = useState<MedicalTest[]>([]);
@@ -36,7 +36,7 @@ function AdminTests() {
           <p className="mt-1 text-sm text-muted-foreground">{tests.length} tests in catalog</p>
         </div>
         <button onClick={() => { setEditing(null); setCopying(null); setShowForm(true); }}
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-accent px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-95">
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-ink px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-95 cursor-pointer">
           <Plus className="h-4 w-4" /> Add Test
         </button>
       </div>
@@ -80,19 +80,22 @@ function AdminTests() {
                     <td className="px-5 py-3 text-muted-foreground">{t.availability}</td>
                     <td className="px-5 py-3 text-muted-foreground">{t.duration}</td>
                     <td className="px-5 py-3 text-muted-foreground">
-                       {t.price ? (
-                         <span>
-                           {t.discountPrice ? (
-                             <>
-                               <span className="line-through opacity-50 mr-2">₹{t.price}</span>
-                               <span className="text-accent font-bold">₹{t.discountPrice}</span>
-                             </>
-                           ) : (
-                             `₹${t.price}`
-                           )}
-                         </span>
-                       ) : "-"}
-                     </td>
+                        <div className="flex items-center gap-2">
+                          {t.price ? (
+                            <span>
+                              {t.discountPrice ? (
+                                <>
+                                  <span className="line-through opacity-50 mr-2">₹{t.price}</span>
+                                  <span className="text-accent font-bold">₹{t.discountPrice}</span>
+                                </>
+                              ) : (
+                                `₹${t.price}`
+                              )}
+                            </span>
+                          ) : "-"}
+                          {t.hidePrice && <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-destructive">Hidden</span>}
+                        </div>
+                      </td>
                     <td className="px-5 py-3 text-right">
                       <div className="inline-flex gap-1">
                         <button 
@@ -105,16 +108,20 @@ function AdminTests() {
                               setCopying(null);
                             }
                             setShowForm(true); 
-                          }} 
-                          disabled={!isFirebaseConfigured} 
-                          className="rounded-lg p-2 text-foreground/70 hover:bg-secondary hover:text-primary disabled:opacity-40"
-                          title={isSample ? "Create new test based on this sample" : "Edit test"}
+                          }}
+                          className="rounded-lg p-2 text-muted-foreground hover:bg-secondary hover:text-primary transition-colors cursor-pointer"
+                          title={isSample ? "Edit (Creates editable copy)" : "Edit Test"}
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => onDelete(t.id)} disabled={!isFirebaseConfigured || isSample} className="rounded-lg p-2 text-foreground/70 hover:bg-destructive/10 hover:text-destructive disabled:opacity-40">
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {!isSample && (
+                          <button 
+                            onClick={() => onDelete(t.id)}
+                            className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -148,9 +155,9 @@ function TestForm({ initial, testToCopy, onClose, onSaved }: { initial: MedicalT
       duration: source.duration, 
       category: source.category, 
       sampleReportUrl: source.sampleReportUrl || "",
-      sampleReportUrl: source.sampleReportUrl || "",
       price: source.price ?? null,
-      discountPrice: source.discountPrice ?? null
+      discountPrice: source.discountPrice ?? null,
+      hidePrice: source.hidePrice ?? false
     } : empty;
   });
   const [busy, setBusy] = useState(false);
@@ -158,9 +165,9 @@ function TestForm({ initial, testToCopy, onClose, onSaved }: { initial: MedicalT
   const [error, setError] = useState("");
 
   const onUpload = async (file: File) => {
-    if (!isCloudinaryConfigured) { setError("Cloudinary not configured. Edit src/lib/cloudinary.ts"); return; }
+    if (!isFirebaseConfigured) { setError("Firebase not configured"); return; }
     setUploading(true); setError("");
-    try { const { url } = await uploadToCloudinary(file); setData({ ...data, sampleReportUrl: url }); }
+    try { const { url } = await uploadFileToStorage(file, "test_images"); setData({ ...data, sampleReportUrl: url }); }
     catch (e) { setError(e instanceof Error ? e.message : "Upload failed"); }
     finally { setUploading(false); }
   };
@@ -214,10 +221,19 @@ function TestForm({ initial, testToCopy, onClose, onSaved }: { initial: MedicalT
               <input type="number" value={data.discountPrice ?? ""} onChange={(e) => setData({ ...data, discountPrice: e.target.value ? Number(e.target.value) : null as any })} className={inputCls} placeholder="e.g. 450" />
             </Field>
           </div>
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input 
+              type="checkbox" 
+              checked={data.hidePrice} 
+              onChange={(e) => setData({ ...data, hidePrice: e.target.checked })}
+              className="h-4 w-4 accent-foreground"
+            />
+            <span className="text-sm font-medium">Hide price from public website</span>
+          </label>
           {error && <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</div>}
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold hover:bg-secondary">Cancel</button>
-            <button type="submit" disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-gradient-accent px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-95 disabled:opacity-60">
+            <button type="submit" disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-gradient-ink px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-95 disabled:opacity-60">
               {busy && <Loader2 className="h-4 w-4 animate-spin" />} Save
             </button>
           </div>
