@@ -62,7 +62,7 @@ function ReportsPage() {
       <Breadcrumbs />
       <AnimatePresence mode="wait">
         {!session ? (
-          <motion.div 
+          <motion.div
             key="login"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -72,7 +72,7 @@ function ReportsPage() {
             <LoginForm onLogin={handleLogin} />
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             key="reports"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -85,7 +85,7 @@ function ReportsPage() {
                   <Phone className="h-3.5 w-3.5" /> {t("portal_linked")} {session.phone}
                 </p>
               </div>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 text-sm font-semibold text-destructive hover:bg-destructive/5 px-4 py-2 rounded-xl transition cursor-pointer"
               >
@@ -137,13 +137,13 @@ function LoginForm({ onLogin }: { onLogin: (phone: string) => void }) {
           <label className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground ml-1">{t("field_mobile")}</label>
           <div className="relative">
             <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input 
-              required 
-              type="tel" 
-              value={phone} 
+            <input
+              required
+              type="tel"
+              value={phone}
               onChange={e => setPhone(e.target.value)}
               className="w-full rounded-2xl border border-input bg-background pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-              placeholder="98765 43210"
+              placeholder="Mobile Number"
             />
           </div>
         </div>
@@ -152,10 +152,10 @@ function LoginForm({ onLogin }: { onLogin: (phone: string) => void }) {
           <label className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground ml-1">{t("field_pin")}</label>
           <div className="relative">
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input 
-              required 
-              type="password" 
-              value={pin} 
+            <input
+              required
+              type="password"
+              value={pin}
               onChange={e => setPin(e.target.value)}
               className="w-full rounded-2xl border border-input bg-background pl-11 pr-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               placeholder="••••••"
@@ -165,9 +165,9 @@ function LoginForm({ onLogin }: { onLogin: (phone: string) => void }) {
 
         {error && <div className="rounded-2xl bg-destructive/10 px-4 py-3 text-sm text-destructive leading-relaxed">{error}</div>}
 
-        <button 
+        <button
           disabled={busy}
-          type="submit" 
+          type="submit"
           className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-ink py-4 text-sm font-bold text-primary-foreground shadow-glow hover:opacity-90 transition disabled:opacity-50 cursor-pointer"
         >
           {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : t("btn_access")}
@@ -215,7 +215,7 @@ function ReportList({ phone }: { phone: string }) {
     fetchPatientReports(phone).then(setReports).finally(() => setLoading(false));
   }, [phone]);
 
-  const filtered = reports.filter(r => 
+  const filtered = reports.filter(r =>
     r.patientName.toLowerCase().includes(search.toLowerCase()) ||
     r.testName.toLowerCase().includes(search.toLowerCase())
   );
@@ -223,7 +223,7 @@ function ReportList({ phone }: { phone: string }) {
   if (loading) {
     return (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {[1,2,3].map(i => <div key={i} className="h-48 rounded-3xl bg-secondary/50 animate-pulse" />)}
+        {[1, 2, 3].map(i => <div key={i} className="h-48 rounded-3xl bg-secondary/50 animate-pulse" />)}
       </div>
     );
   }
@@ -244,7 +244,7 @@ function ReportList({ phone }: { phone: string }) {
     <div className="space-y-6">
       <div className="relative max-w-md">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <input 
+        <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder={t("portal_search_reports")}
@@ -267,7 +267,7 @@ function ReportList({ phone }: { phone: string }) {
                   <FileText className="h-6 w-6" />
                 </div>
               </div>
-              
+
               <div className="flex-1 space-y-3">
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-accent uppercase tracking-wider mb-1">
@@ -277,7 +277,7 @@ function ReportList({ phone }: { phone: string }) {
                     {r.testName}
                   </h3>
                 </div>
-                
+
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Clock className="h-3.5 w-3.5" />
                   <span>{r.createdAt?.toDate().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
@@ -287,20 +287,20 @@ function ReportList({ phone }: { phone: string }) {
               </div>
 
               <div className="mt-6 grid grid-cols-2 gap-2">
-                <a 
-                  href={r.reportUrl} 
-                  target="_blank" 
+                <a
+                  href={r.reportUrl}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 rounded-xl bg-secondary px-3 py-2.5 text-xs font-bold hover:bg-secondary/80 transition cursor-pointer"
                 >
                   <Eye className="h-3.5 w-3.5" /> {t("portal_btn_view")}
                 </a>
-                <button 
+                <button
                   onClick={() => handleDownload(r)}
                   disabled={downloadingId === r.id}
                   className="flex items-center justify-center gap-2 rounded-xl bg-primary text-primary-foreground px-3 py-2.5 text-xs font-bold hover:opacity-90 transition disabled:opacity-50 cursor-pointer"
                 >
-                  {downloadingId === r.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />} 
+                  {downloadingId === r.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
                   {downloadingId === r.id ? t("portal_downloading") : t("portal_btn_download")}
                 </button>
               </div>

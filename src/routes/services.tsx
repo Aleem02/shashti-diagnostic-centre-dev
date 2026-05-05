@@ -59,7 +59,10 @@ function ServicesPage() {
     return tests.filter((t) => {
       if (urlCategory !== "All" && t.category !== urlCategory) return false;
       if (homeOnly && t.availability === "Lab") return false;
-      if (q && !t.name.toLowerCase().includes(q.toLowerCase())) return false;
+      if (q && !(
+        t.name.toLowerCase().includes(q.toLowerCase()) || 
+        t.category.toLowerCase().includes(q.toLowerCase())
+      )) return false;
       return true;
     });
   }, [tests, urlCategory, homeOnly, q]);
