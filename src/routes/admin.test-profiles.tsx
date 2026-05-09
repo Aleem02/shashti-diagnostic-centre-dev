@@ -1,16 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { fetchTests, addTest, updateTest, deleteTest } from "@/lib/tests-service";
+import { fetchTestProfiles, addTestProfile, updateTestProfile, deleteTestProfile } from "@/lib/tests-service";
 import { isFirebaseConfigured, uploadFileToStorage } from "@/lib/firebase";
 
-import type { MedicalTest, Availability } from "@/lib/seed-data";
-import { Plus, Pencil, Trash2, Loader2, X, Upload, AlertCircle, FileText, Copy, Search } from "lucide-react";
+import type { TestProfile, Availability } from "@/lib/seed-data";
+import { Plus, Pencil, Trash2, Loader2, X, Star, AlertCircle, Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/admin/tests")({
-  component: AdminTests,
+export const Route = createFileRoute("/admin/test-profiles")({
+  component: AdminTestProfiles,
 });
 
-const empty: Omit<MedicalTest, "id"> = { 
+const empty: Omit<TestProfile, "id"> = { 
   name: "", 
   description: "", 
   availability: "Both", 
@@ -19,37 +20,59 @@ const empty: Omit<MedicalTest, "id"> = {
   price: null, 
   discountPrice: null, 
   hidePrice: false,
+  includedTests: [],
   slug: "",
-  biomarkers: [],
+  category: "Test Profiles",
   requirements: [
     "No special preparation needed"
-  ]
+  ],
+  featured: false
 };
 
-function AdminTests() {
-  const [tests, setTests] = useState<MedicalTest[]>([]);
+function AdminTestProfiles() {
+  const [profiles, setProfiles] = useState<TestProfile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<MedicalTest | null>(null);
-  const [copying, setCopying] = useState<MedicalTest | null>(null);
+  const [editing, setEditing] = useState<TestProfile | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const refresh = () => { setLoading(true); setSelectedIds([]); fetchTests().then((t) => { setTests(t); setLoading(false); }); };
+  const refresh = () => { 
+    setLoading(true); 
+    setSelectedIds([]);
+    fetchTestProfiles().then((p) => { 
+      setProfiles(p); 
+      setLoading(false); 
+    }); 
+  };
+  
   useEffect(refresh, []);
 
   const onDelete = async (id: string) => {
-    if (!confirm("Delete this test?")) return;
-    try { await deleteTest(id); refresh(); }
-    catch (e) { alert(e instanceof Error ? e.message : "Failed"); }
+    if (!confirm("Delete this test profile?")) return;
+    try { 
+      await deleteTestProfile(id); 
+      refresh(); 
+    } catch (e) { 
+      alert(e instanceof Error ? e.message : "Failed"); 
+    }
+  };
+
+  const toggleFeatured = async (p: TestProfile) => {
+    try {
+      await updateTestProfile(p.id, { featured: !p.featured });
+      refresh();
+    } catch (err) {
+      console.error("Failed to toggle featured:", err);
+    }
   };
 
   const onBulkDelete = async () => {
-    if (!confirm(`Delete ${selectedIds.length} selected tests?`)) return;
+    if (!confirm(`Delete ${selectedIds.length} selected profiles?`)) return;
     setIsBulkDeleting(true);
     try {
-      await Promise.all(selectedIds.map(id => deleteTest(id)));
+      await Promise.all(selectedIds.map(id => deleteTestProfile(id)));
       refresh();
     } catch (e) {
       alert(e instanceof Error ? e.message : "Bulk delete failed");
@@ -58,24 +81,24 @@ function AdminTests() {
     }
   };
 
-  const filteredTests = tests.filter(t => 
-    t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    t.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProfiles = profiles.filter(p => 
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-bold">Medical Tests</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{tests.length} tests in catalog</p>
+          <h1 className="font-display text-3xl font-bold">Test Profiles (Packages)</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{profiles.length} profiles in catalog</p>
         </div>
-
+        
         <div className="flex-1 max-w-md relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input 
             type="text"
-            placeholder="Search tests by name or description..."
+            placeholder="Search packages by name or info..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-card text-sm focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all"
@@ -89,9 +112,9 @@ function AdminTests() {
               Delete ({selectedIds.length})
             </button>
           )}
-          <button onClick={() => { setEditing(null); setCopying(null); setShowForm(true); }}
+          <button onClick={() => { setEditing(null); setShowForm(true); }}
             className="inline-flex items-center gap-2 rounded-xl bg-gradient-ink px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-glow hover:opacity-95 cursor-pointer">
-            <Plus className="h-4 w-4" /> Add Test
+            <Plus className="h-4 w-4" /> Add Profile
           </button>
         </div>
       </div>
@@ -101,7 +124,7 @@ function AdminTests() {
           <AlertCircle className="h-5 w-5 shrink-0 text-warning-foreground" />
           <div className="text-warning-foreground">
             <p className="font-semibold">Read-only mode</p>
-            <p className="text-xs mt-1">You're viewing seed data. Configure Firebase to add/edit tests.</p>
+            <p className="text-xs mt-1">Configure Firebase to manage test profiles.</p>
           </div>
         </div>
       )}
@@ -117,80 +140,80 @@ function AdminTests() {
                   <th className="px-5 py-3 font-semibold w-12">
                     <input 
                       type="checkbox" 
-                      checked={selectedIds.length === tests.length && tests.length > 0}
+                      checked={selectedIds.length === profiles.length && profiles.length > 0}
                       onChange={(e) => {
-                        if (e.target.checked) setSelectedIds(tests.map(t => t.id));
+                        if (e.target.checked) setSelectedIds(profiles.map(p => p.id));
                         else setSelectedIds([]);
                       }}
                       className="h-4 w-4 accent-primary rounded cursor-pointer"
                     />
                   </th>
-                  <th className="px-5 py-3 font-semibold">Test Name</th>
+                  <th className="px-5 py-3 font-semibold">Profile Name</th>
                   <th className="px-5 py-3 font-semibold">Availability</th>
                   <th className="px-5 py-3 font-semibold">Duration</th>
                   <th className="px-5 py-3 font-semibold">Price</th>
+                  <th className="px-5 py-3 font-semibold text-center">Featured</th>
                   <th className="px-5 py-3 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredTests.map((t) => {
-                  const isSample = /^\d+$/.test(t.id);
-                  return (
-                  <tr key={t.id} className={`border-t border-border hover:bg-secondary/30 transition-colors ${selectedIds.includes(t.id) ? 'bg-secondary/40' : ''}`}>
+                {filteredProfiles.map((p) => (
+                  <tr key={p.id} className={`border-t border-border hover:bg-secondary/30 transition-colors ${selectedIds.includes(p.id) ? 'bg-secondary/40' : ''}`}>
                     <td className="px-5 py-3">
                       <input 
                         type="checkbox" 
-                        checked={selectedIds.includes(t.id)}
+                        checked={selectedIds.includes(p.id)}
                         onChange={(e) => {
-                          if (e.target.checked) setSelectedIds([...selectedIds, t.id]);
-                          else setSelectedIds(selectedIds.filter(id => id !== t.id));
+                          if (e.target.checked) setSelectedIds([...selectedIds, p.id]);
+                          else setSelectedIds(selectedIds.filter(id => id !== p.id));
                         }}
                         className="h-4 w-4 accent-primary rounded cursor-pointer"
                       />
                     </td>
                     <td className="px-5 py-3">
-                      <div className="font-medium">{t.name}</div>
-                      {isSample && <span className="inline-block mt-0.5 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Sample</span>}
+                      <div className="font-medium">{p.name}</div>
                     </td>
-                    <td className="px-5 py-3 text-muted-foreground">{t.availability}</td>
-                    <td className="px-5 py-3 text-muted-foreground">{t.duration}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{p.availability}</td>
+                    <td className="px-5 py-3 text-muted-foreground">{p.duration}</td>
                     <td className="px-5 py-3 text-muted-foreground">
                         <div className="flex items-center gap-2">
-                          {t.price ? (
+                          {p.price ? (
                             <span>
-                              {t.discountPrice ? (
+                              {p.discountPrice ? (
                                 <>
-                                  <span className="line-through opacity-50 mr-2">₹{t.price}</span>
-                                  <span className="text-accent font-bold">₹{t.discountPrice}</span>
+                                  <span className="line-through opacity-50 mr-2">₹{p.price}</span>
+                                  <span className="text-accent font-bold">₹{p.discountPrice}</span>
                                 </>
                               ) : (
-                                `₹${t.price}`
+                                `₹${p.price}`
                               )}
                             </span>
                           ) : "-"}
-                          {t.hidePrice && <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-destructive">Hidden</span>}
+                          {p.hidePrice && <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-[9px] font-bold uppercase text-destructive">Hidden</span>}
                         </div>
                       </td>
+                    <td className="px-5 py-3 text-center">
+                      <button
+                        onClick={() => toggleFeatured(p)}
+                        className={cn(
+                          "p-2 rounded-lg transition-all hover:scale-110 active:scale-90",
+                          p.featured ? "text-amber-500 fill-amber-500" : "text-muted-foreground/30 hover:text-amber-500/50"
+                        )}
+                        title={p.featured ? "Remove from Homepage" : "Show on Homepage"}
+                      >
+                        <Star className="h-5 w-5" />
+                      </button>
+                    </td>
                     <td className="px-5 py-3 text-right">
                       <div className="inline-flex gap-1">
                         <button 
-                          onClick={() => { 
-                            if (isSample) {
-                              setCopying(t);
-                              setEditing(null);
-                            } else {
-                              setEditing(t);
-                              setCopying(null);
-                            }
-                            setShowForm(true); 
-                          }}
+                          onClick={() => { setEditing(p); setShowForm(true); }}
                           className="rounded-lg p-2 text-muted-foreground hover:bg-secondary hover:text-primary transition-colors cursor-pointer"
-                          title={isSample ? "Edit (Creates editable copy)" : "Edit Test"}
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button 
-                          onClick={() => onDelete(t.id)}
+                          onClick={() => onDelete(p.id)}
                           className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -198,8 +221,7 @@ function AdminTests() {
                       </div>
                     </td>
                   </tr>
-                  );
-                })}
+                ))}
               </tbody>
             </table>
           </div>
@@ -207,9 +229,8 @@ function AdminTests() {
       )}
 
       {showForm && (
-        <TestForm 
+        <ProfileForm 
           initial={editing} 
-          testToCopy={copying} 
           onClose={() => setShowForm(false)} 
           onSaved={() => { setShowForm(false); refresh(); }} 
         />
@@ -218,7 +239,7 @@ function AdminTests() {
   );
 }
 
-function TagInput({ tags, setTags, placeholder }: { tags: string[]; setTags: (tags: string[]) => void; placeholder?: string }) {
+function TestTagInput({ tags, setTags }: { tags: string[]; setTags: (tags: string[]) => void }) {
   const [input, setInput] = useState("");
 
   const addTag = () => {
@@ -246,7 +267,7 @@ function TagInput({ tags, setTags, placeholder }: { tags: string[]; setTags: (ta
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 p-3 min-h-[80px] rounded-xl border border-border bg-secondary/5">
-        {tags.length === 0 && <span className="text-muted-foreground text-xs italic p-1">No markers added yet...</span>}
+        {tags.length === 0 && <span className="text-muted-foreground text-xs italic p-1">No tests added yet...</span>}
         {tags.map((tag, i) => (
           <span key={i} className="inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary group transition-all hover:bg-primary/20">
             {tag}
@@ -268,7 +289,7 @@ function TagInput({ tags, setTags, placeholder }: { tags: string[]; setTags: (ta
           onKeyDown={onKeyDown}
           onBlur={addTag}
           className={inputCls} 
-          placeholder={placeholder || "Type & press Enter or Comma..."} 
+          placeholder="Type test name & press Enter or Comma..." 
         />
         <button 
           type="button" 
@@ -282,51 +303,42 @@ function TagInput({ tags, setTags, placeholder }: { tags: string[]; setTags: (ta
   );
 }
 
-function TestForm({ initial, testToCopy, onClose, onSaved }: { initial: MedicalTest | null; testToCopy?: MedicalTest | null; onClose: () => void; onSaved: () => void }) {
-  const [data, setData] = useState<Omit<MedicalTest, "id">>(() => {
-    const source = initial || testToCopy;
-    return source ? { 
-      name: source.name, 
-      description: source.description, 
-      availability: source.availability, 
-      duration: source.duration, 
-      sampleReportUrl: source.sampleReportUrl || "",
-      price: source.price ?? null,
-      discountPrice: source.discountPrice ?? null,
-      hidePrice: source.hidePrice ?? false,
-      slug: source.slug || "",
-      biomarkers: source.biomarkers || [],
-      requirements: source.requirements || [
-        "No special preparation needed"
-      ]
-    } : empty;
-  });
-
+function ProfileForm({ initial, onClose, onSaved }: { initial: TestProfile | null; onClose: () => void; onSaved: () => void }) {
+  const [data, setData] = useState<Omit<TestProfile, "id">>(() => initial ? { 
+    name: initial.name, 
+    description: initial.description, 
+    availability: initial.availability, 
+    duration: initial.duration, 
+    sampleReportUrl: initial.sampleReportUrl || "",
+    price: initial.price ?? null,
+    discountPrice: initial.discountPrice ?? null,
+    hidePrice: initial.hidePrice ?? false,
+    includedTests: initial.includedTests || [],
+    slug: initial.slug || "",
+    category: initial.category || "Test Profiles",
+    requirements: initial.requirements || [
+      "No special preparation needed"
+    ],
+    featured: initial.featured ?? false
+  } : empty);
+  
   const [requirementsStr, setRequirementsStr] = useState("");
 
   useEffect(() => {
-    const source = initial || testToCopy;
-    if (source) {
-      setRequirementsStr(source.requirements?.join("\n") || "");
+    if (initial) {
+      setRequirementsStr(initial.requirements?.join("\n") || "");
     } else {
       setRequirementsStr(empty.requirements?.join("\n") || "");
     }
-  }, [initial, testToCopy]);
+  }, [initial]);
 
   const [busy, setBusy] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
-  const onUpload = async (file: File) => {
-    if (!isFirebaseConfigured) { setError("Firebase not configured"); return; }
-    setUploading(true); setError("");
-    try { const { url } = await uploadFileToStorage(file, "test_images"); setData({ ...data, sampleReportUrl: url }); }
-    catch (e) { setError(e instanceof Error ? e.message : "Upload failed"); }
-    finally { setUploading(false); }
-  };
-
   const onSubmit = async (e: FormEvent) => {
-    e.preventDefault(); setBusy(true); setError("");
+    e.preventDefault(); 
+    setBusy(true); 
+    setError("");
     
     // Process requirements into array
     const finalData = {
@@ -339,12 +351,14 @@ function TestForm({ initial, testToCopy, onClose, onSaved }: { initial: MedicalT
     );
 
     try {
-      const finalPayload = { ...cleanData, category: "Tests" };
-      if (initial) await updateTest(initial.id, finalPayload as any);
-      else await addTest(finalPayload as any);
+      if (initial) await updateTestProfile(initial.id, cleanData as any);
+      else await addTestProfile(cleanData as any);
       onSaved();
-    } catch (err) { setError(err instanceof Error ? err.message : "Save failed"); }
-    finally { setBusy(false); }
+    } catch (err) { 
+      setError(err instanceof Error ? err.message : "Save failed"); 
+    } finally { 
+      setBusy(false); 
+    }
   };
 
   return (
@@ -352,23 +366,22 @@ function TestForm({ initial, testToCopy, onClose, onSaved }: { initial: MedicalT
       <div className="w-full max-w-lg rounded-3xl border border-border bg-card shadow-elevated max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between border-b border-border p-5">
           <h2 className="font-display text-lg font-bold">
-            {initial ? "Edit Test" : testToCopy ? "Create from Sample" : "Add Test"}
+            {initial ? "Edit Profile" : "Add Test Profile"}
           </h2>
           <button onClick={onClose} className="rounded-lg p-2 hover:bg-secondary"><X className="h-4 w-4" /></button>
         </div>
         <form onSubmit={onSubmit} className="p-5 space-y-5">
-          <Field label="Test Name"><input required value={data.name} onChange={(e) => {
+          <Field label="Profile Name"><input required value={data.name} onChange={(e) => {
             const name = e.target.value;
             const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
             setData({ ...data, name, slug });
           }} className={inputCls} /></Field>
-          <Field label="Description"><textarea required rows={2} value={data.description} onChange={(e) => setData({ ...data, description: e.target.value })} className={inputCls} /></Field>
+          <Field label="Description"><textarea required rows={2} value={data.description} onChange={(e) => setData({ ...data, description: e.target.value })} className={inputCls} placeholder="Brief summary of the package..." /></Field>
           
-          <Field label="Key Biomarkers Tested (Smart Selection)">
-            <TagInput 
-              tags={data.biomarkers} 
-              setTags={(tags) => setData({ ...data, biomarkers: tags })}
-              placeholder="e.g. Hemoglobin, RBC, WBC..."
+          <Field label="Tests Included (Smart Selection)">
+            <TestTagInput 
+              tags={data.includedTests} 
+              setTags={(tags) => setData({ ...data, includedTests: tags })} 
             />
           </Field>
 
@@ -384,21 +397,33 @@ function TestForm({ initial, testToCopy, onClose, onSaved }: { initial: MedicalT
           </div>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Price (Optional)">
-              <input type="number" value={data.price ?? ""} onChange={(e) => setData({ ...data, price: e.target.value ? Number(e.target.value) : null })} className={inputCls} placeholder="e.g. 500" />
+              <input type="number" value={data.price ?? ""} onChange={(e) => setData({ ...data, price: e.target.value ? Number(e.target.value) : null })} className={inputCls} placeholder="e.g. 2000" />
             </Field>
             <Field label="Discount Price (Optional)">
-              <input type="number" value={data.discountPrice ?? ""} onChange={(e) => setData({ ...data, discountPrice: e.target.value ? Number(e.target.value) : null })} className={inputCls} placeholder="e.g. 450" />
+              <input type="number" value={data.discountPrice ?? ""} onChange={(e) => setData({ ...data, discountPrice: e.target.value ? Number(e.target.value) : null })} className={inputCls} placeholder="e.g. 1500" />
             </Field>
           </div>
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <input 
-              type="checkbox" 
-              checked={data.hidePrice} 
-              onChange={(e) => setData({ ...data, hidePrice: e.target.checked })}
-              className="h-4 w-4 accent-foreground"
-            />
-            <span className="text-sm font-medium">Hide price from public website</span>
-          </label>
+          <div className="flex flex-wrap gap-6">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input 
+                type="checkbox" 
+                checked={data.hidePrice} 
+                onChange={(e) => setData({ ...data, hidePrice: e.target.checked })}
+                className="h-4 w-4 accent-primary rounded"
+              />
+              <span className="text-sm font-medium">Hide Price</span>
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input 
+                type="checkbox" 
+                checked={data.featured} 
+                onChange={(e) => setData({ ...data, featured: e.target.checked })}
+                className="h-4 w-4 accent-primary rounded"
+              />
+              <span className="text-sm font-medium text-primary">Show on Homepage (Featured)</span>
+            </label>
+          </div>
           {error && <div className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</div>}
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" onClick={onClose} className="rounded-xl border border-border px-4 py-2.5 text-sm font-semibold hover:bg-secondary">Cancel</button>

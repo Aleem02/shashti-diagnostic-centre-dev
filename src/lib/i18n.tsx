@@ -166,6 +166,46 @@ export const translations: Translations = {
   },
   footer_address: { en: "Laya Complex, S.P Kovil Street, Chidambaram", ta: "லயா காம்க்ளக்ஸ், எஸ்.பி கோவில் தெரு, சிதம்பரம்" },
   footer_promise: { en: "Same-day reports. Doorstep collection. No hidden charges.", ta: "ஒரே நாளில் அறிக்கைகள். வீட்டிற்கே வந்து சேகரிப்பு. மறைமுகக் கட்டணங்கள் இல்லை." },
+
+  // Service Cards
+  card_24h_title: { en: "Open 24 Hours", ta: "24 மணிநேர சேவை" },
+  card_24h_desc: { en: "Round-the-clock diagnostic support for your emergencies and convenience.", ta: "அவசரத் தேவை மற்றும் உங்கள் வசதிக்காக 24 மணிநேரமும் செயல்படுகிறோம்." },
+  card_reports_title: { en: "Same-Day Reports", ta: "ஒரே நாளில் அறிக்கை" },
+  card_reports_desc: { en: "Fast and accurate digital reports delivered within hours of sample collection.", ta: "மாதிரி சேகரித்த சில மணிநேரங்களில் துல்லியமான டிஜிட்டல் அறிக்கைகள்." },
+  card_collection_title: { en: "Doorstep Collection", ta: "வீட்டிற்கே வந்து சேகரிப்பு" },
+  card_collection_desc: { en: "Safe and professional sample collection from the comfort of your home.", ta: "உங்கள் வீட்டிலிருந்தே பாதுகாப்பான மற்றும் நிபுணத்துவ மாதிரி சேகரிப்பு." },
+  card_pathologist_title: { en: "Pathologist Reviewed", ta: "நிபுணர்களின் பரிசோதனை" },
+  card_pathologist_desc: { en: "Every report is meticulously verified by our team of certified specialists.", ta: "ஒவ்வொரு அறிக்கையும் சான்றளிக்கப்பட்ட நிபுணர்களால் சரிபார்க்கப்படுகிறது." },
+
+  // Featured Packages
+  pkg_tag: { en: "Curated Wellness", ta: "சிறப்பு ஆரோக்கிய தொகுப்புகள்" },
+  pkg_title_1: { en: "Featured", ta: "சிறந்த" },
+  pkg_title_2: { en: "Health Packages", ta: "சுகாதார தொகுப்புகள்" },
+  pkg_desc: { en: "Comprehensive checkups designed by medical experts to give you a complete picture of your health.", ta: "மருத்துவ நிபுணர்களால் வடிவமைக்கப்பட்ட முழுமையான உடல் பரிசோதனைகள்." },
+  pkg_explore: { en: "Explore All Profiles", ta: "அனைத்து தொகுப்புகளையும் பார்க்க" },
+  pkg_view_all: { en: "View All Health Packages", ta: "அனைத்து தொகுப்புகளையும் காண்க" },
+
+  // Certifications
+  cert_title: { en: "Our Accreditations", ta: "எங்களது அங்கீகாரங்கள்" },
+  cert_desc: { en: "Shashti Diagnostic Center maintains the highest international standards of quality and precision, certified by leading global accreditation bodies.", ta: "சாஸ்தி பரிசோதனை மையம் சர்வதேச தரத்தையும் துல்லியத்தையும் கடைபிடிக்கிறது, இது முன்னணி உலகளாவிய அமைப்புகளால் அங்கீகரிக்கப்பட்டுள்ளது." },
+
+  // Discounts & Badges
+  discount_off: { en: "OFF", ta: "தள்ளுபடி" },
+  discount_save: { en: "Special Offer: Save", ta: "சிறப்புச் சலுகை: சேமிப்பு" },
+
+  // Services Page Specific
+  sv_hero_title_1: { en: "Find the Right", ta: "சரியான" },
+  sv_hero_title_2: { en: "Diagnostic Test", ta: "பரிசோதனையைக் கண்டறியவும்" },
+  sv_hero_desc: { 
+    en: "Explore trusted lab tests and health profiles with fast and reliable reporting. Your health, monitored with precision.", 
+    ta: "நம்பகமான ஆய்வகப் பரிசோதனைகள் மற்றும் சுகாதார விவரங்களை விரைவான மற்றும் நம்பகமான அறிக்கைகளுடன் கண்டறியவும். உங்கள் ஆரோக்கியம், துல்லியத்துடன் கண்காணிக்கப்படுகிறது." 
+  },
+  sv_total_tests: { en: "Individual Tests", ta: "தனிப்பட்ட பரிசோதனைகள்" },
+  sv_total_profiles: { en: "Health Packages", ta: "ஆரோக்கிய தொகுப்புகள்" },
+  sv_results_count: { en: "Results", ta: "முடிவுகள்" },
+  sv_all_catalogue: { en: "Complete Catalogue", ta: "முழுமையான பட்டியல்" },
+  sv_search_placeholder: { en: "Search tests...", ta: "பரிசோதனைகளைத் தேடுக..." },
+  sv_home_only: { en: "Home Only", ta: "வீட்டிற்கு மட்டும்" },
 };
 
 interface LanguageContextType {

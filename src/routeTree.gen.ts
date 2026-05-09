@@ -9,23 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ServicesRouteImport } from './routes/services'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as ServicesSlugRouteImport } from './routes/services_.$slug'
 import { Route as AdminTestsRouteImport } from './routes/admin.tests'
+import { Route as AdminTestProfilesRouteImport } from './routes/admin.test-profiles'
 import { Route as AdminPatientsRouteImport } from './routes/admin.patients'
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
+import { Route as AdminPatientsAllRouteImport } from './routes/admin.patients_.all'
 
-const ServicesRoute = ServicesRouteImport.update({
-  id: '/services',
-  path: '/services',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -56,14 +54,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const ServicesSlugRoute = ServicesSlugRouteImport.update({
+  id: '/services_/$slug',
+  path: '/services/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTestsRoute = AdminTestsRouteImport.update({
   id: '/tests',
   path: '/tests',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTestProfilesRoute = AdminTestProfilesRouteImport.update({
+  id: '/test-profiles',
+  path: '/test-profiles',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPatientsRoute = AdminPatientsRouteImport.update({
@@ -76,6 +89,11 @@ const AdminGalleryRoute = AdminGalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPatientsAllRoute = AdminPatientsAllRouteImport.update({
+  id: '/patients_/all',
+  path: '/patients/all',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -84,11 +102,14 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/reports': typeof ReportsRoute
-  '/services': typeof ServicesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/patients': typeof AdminPatientsRoute
+  '/admin/test-profiles': typeof AdminTestProfilesRoute
   '/admin/tests': typeof AdminTestsRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/services/': typeof ServicesIndexRoute
+  '/admin/patients/all': typeof AdminPatientsAllRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -96,11 +117,14 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/reports': typeof ReportsRoute
-  '/services': typeof ServicesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/patients': typeof AdminPatientsRoute
+  '/admin/test-profiles': typeof AdminTestProfilesRoute
   '/admin/tests': typeof AdminTestsRoute
+  '/services/$slug': typeof ServicesSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/services': typeof ServicesIndexRoute
+  '/admin/patients/all': typeof AdminPatientsAllRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -110,11 +134,14 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/reports': typeof ReportsRoute
-  '/services': typeof ServicesRoute
   '/admin/gallery': typeof AdminGalleryRoute
   '/admin/patients': typeof AdminPatientsRoute
+  '/admin/test-profiles': typeof AdminTestProfilesRoute
   '/admin/tests': typeof AdminTestsRoute
+  '/services_/$slug': typeof ServicesSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/services/': typeof ServicesIndexRoute
+  '/admin/patients_/all': typeof AdminPatientsAllRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -125,11 +152,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/reports'
-    | '/services'
     | '/admin/gallery'
     | '/admin/patients'
+    | '/admin/test-profiles'
     | '/admin/tests'
+    | '/services/$slug'
     | '/admin/'
+    | '/services/'
+    | '/admin/patients/all'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -137,11 +167,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/reports'
-    | '/services'
     | '/admin/gallery'
     | '/admin/patients'
+    | '/admin/test-profiles'
     | '/admin/tests'
+    | '/services/$slug'
     | '/admin'
+    | '/services'
+    | '/admin/patients/all'
   id:
     | '__root__'
     | '/'
@@ -150,11 +183,14 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/reports'
-    | '/services'
     | '/admin/gallery'
     | '/admin/patients'
+    | '/admin/test-profiles'
     | '/admin/tests'
+    | '/services_/$slug'
     | '/admin/'
+    | '/services/'
+    | '/admin/patients_/all'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -164,18 +200,12 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   ReportsRoute: typeof ReportsRoute
-  ServicesRoute: typeof ServicesRoute
+  ServicesSlugRoute: typeof ServicesSlugRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/services': {
-      id: '/services'
-      path: '/services'
-      fullPath: '/services'
-      preLoaderRoute: typeof ServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/reports': {
       id: '/reports'
       path: '/reports'
@@ -218,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/': {
+      id: '/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -225,11 +262,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/services_/$slug': {
+      id: '/services_/$slug'
+      path: '/services/$slug'
+      fullPath: '/services/$slug'
+      preLoaderRoute: typeof ServicesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/tests': {
       id: '/admin/tests'
       path: '/tests'
       fullPath: '/admin/tests'
       preLoaderRoute: typeof AdminTestsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/test-profiles': {
+      id: '/admin/test-profiles'
+      path: '/test-profiles'
+      fullPath: '/admin/test-profiles'
+      preLoaderRoute: typeof AdminTestProfilesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/patients': {
@@ -246,21 +297,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminGalleryRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/patients_/all': {
+      id: '/admin/patients_/all'
+      path: '/patients/all'
+      fullPath: '/admin/patients/all'
+      preLoaderRoute: typeof AdminPatientsAllRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminGalleryRoute: typeof AdminGalleryRoute
   AdminPatientsRoute: typeof AdminPatientsRoute
+  AdminTestProfilesRoute: typeof AdminTestProfilesRoute
   AdminTestsRoute: typeof AdminTestsRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminPatientsAllRoute: typeof AdminPatientsAllRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminGalleryRoute: AdminGalleryRoute,
   AdminPatientsRoute: AdminPatientsRoute,
+  AdminTestProfilesRoute: AdminTestProfilesRoute,
   AdminTestsRoute: AdminTestsRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminPatientsAllRoute: AdminPatientsAllRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -272,7 +334,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   ReportsRoute: ReportsRoute,
-  ServicesRoute: ServicesRoute,
+  ServicesSlugRoute: ServicesSlugRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

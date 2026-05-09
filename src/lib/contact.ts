@@ -8,3 +8,5 @@ export const getWhatsAppLink = (text = "Hello Shashti Diagnostic Center") => {
 export const getTelLink = () => {
   return `tel:${WHATSAPP_NUMBER.startsWith("+") ? WHATSAPP_NUMBER : "+" + WHATSAPP_NUMBER}`;
 };
+
+export const INSTAGRAM_URL = "https://www.instagram.com/shashtidiagcentre?utm_source=qr&igsh=MTc5emtxNWdrbGxzcw%3D%3D";

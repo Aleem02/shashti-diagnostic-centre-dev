@@ -2,6 +2,8 @@ import { createFileRoute } from '@tanstack/react-router'
 import { MapPin, ShieldCheck, Clock, Users } from "lucide-react";
 import { useLanguage } from "@/lib/i18n.tsx";
 import { Breadcrumbs } from "@/components/SEO";
+import { Certifications } from "@/components/Certifications";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -18,7 +20,7 @@ export const Route = createFileRoute("/about")({
 const services = ["Allergy Panels", "Hematology", "Cardiology · ECG", "Neurology · EEG", "Endocrinology", "Lipid Profile", "Diabetes Screening", "Liver & Kidney", "Vitamin Profiles", "Wellness Suites"];
 
 function AboutPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const trustPillars = [
     { num: "I", icon: ShieldCheck, title: t("pillar_1_title") || "No hidden charges", desc: t("pillar_1_desc") || "Transparent pricing — what you see is what you pay. Always." },
     { num: "II", icon: Clock, title: t("pillar_2_title") || "Reports on time", desc: t("pillar_2_desc") || "Same-day or next-day delivery, every single instance." },
@@ -46,7 +48,10 @@ function AboutPage() {
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("about_manifesto_tag")}</div>
           </div>
           <div className="lg:col-span-9">
-            <p className="font-display text-3xl lg:text-5xl leading-[1.15] text-foreground/90 max-w-4xl tracking-tight">
+            <p className={cn(
+              "font-display leading-[1.15] text-foreground/90 max-w-4xl tracking-tight",
+              language === "ta" ? "text-2xl lg:text-4xl" : "text-3xl lg:text-5xl"
+            )}>
               {t("about_manifesto_text")}
             </p>
           </div>
@@ -76,6 +81,9 @@ function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* Certifications */}
+      <Certifications />
 
       {/* Trust pillars */}
       <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-24">

@@ -18,11 +18,11 @@ export function JsonLd({ data }: { data: any }) {
  */
 export function Breadcrumbs() {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  
+
   if (path === "/") return null;
 
   const parts = path.split("/").filter(Boolean);
-  
+
   return (
     <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
       <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
@@ -30,7 +30,7 @@ export function Breadcrumbs() {
         const to = `/${parts.slice(0, i + 1).join("/")}`;
         const isLast = i === parts.length - 1;
         const label = part.charAt(0).toUpperCase() + part.slice(1);
-        
+
         return (
           <div key={to} className="flex items-center gap-2">
             <ChevronRight className="h-3 w-3 opacity-50" />
@@ -54,14 +54,26 @@ export const organizationSchema = {
   "@type": "MedicalBusiness",
   "name": "Shashti Diagnostic Center",
   "alternateName": "Shashti Digital Health",
+  "description": "Premium diagnostic center in Chidambaram offering 24/7 blood tests, health packages, and home sample collection.",
   "url": "https://shashtidiagnostic.in",
   "logo": "https://shashtidiagnostic.in/favicon.svg",
+  "image": "https://shashtidiagnostic.in/og-image.jpg",
+  "medicalSpecialty": [
+    "Pathology",
+    "Diagnostic services",
+    "Laboratory medicine",
+    "Radiology"
+  ],
+  "priceRange": "₹₹",
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "+91 99999 99999",
+    "telephone": "+91 99999 99999", // Replace with real phone
     "contactType": "customer service",
-    "areaServed": "IN",
-    "availableLanguage": ["en", "Tamil"]
+    "areaServed": {
+      "@type": "State",
+      "name": "Tamil Nadu"
+    },
+    "availableLanguage": ["English", "Tamil"]
   },
   "address": {
     "@type": "PostalAddress",
@@ -76,16 +88,16 @@ export const organizationSchema = {
     "latitude": 11.3995,
     "longitude": 79.6936
   },
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": [
-      "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-    ],
-    "opens": "00:00",
-    "closes": "23:59"
-  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "00:00",
+      "closes": "23:59"
+    }
+  ],
+  "hasMap": "https://maps.google.com/?q=Shashti+Diagnostic+Center+Chidambaram",
   "sameAs": [
-    "https://facebook.com/shashtidiagnostic",
-    "https://instagram.com/shashtidiagnostic"
+    "https://www.instagram.com/shashtidiagcentre"
   ]
 };

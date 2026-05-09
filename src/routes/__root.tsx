@@ -6,6 +6,18 @@ import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { LanguageProvider } from "@/lib/i18n.tsx";
 import { JsonLd, organizationSchema } from "@/components/SEO";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 30, // 30 minutes (Diagnostics data rarely changes)
+      gcTime: 1000 * 60 * 60 * 24, // 24 hours
+      refetchOnWindowFocus: false, // Save reads when user switches tabs
+      retry: 1,
+    },
+  },
+});
 
 function NotFoundComponent() {
   return (
@@ -60,26 +72,28 @@ function RootComponent() {
   const isAdmin = path.startsWith("/admin");
   
   return (
-    <LanguageProvider>
-      <JsonLd data={organizationSchema} />
-      <div className="min-h-screen flex flex-col">
-        {!isAdmin && <Navbar />}
-        <main className="flex-1 overflow-x-hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={path}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
-        </main>
-        {!isAdmin && <Footer />}
-        {!isAdmin && <WhatsAppButton />}
-      </div>
-    </LanguageProvider>
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <JsonLd data={organizationSchema} />
+        <div className="min-h-screen flex flex-col">
+          {!isAdmin && <Navbar />}
+          <main className="flex-1 overflow-x-hidden">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={path}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
+          </main>
+          {!isAdmin && <Footer />}
+          {!isAdmin && <WhatsAppButton />}
+        </div>
+      </LanguageProvider>
+    </QueryClientProvider>
   );
 }

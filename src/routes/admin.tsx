@@ -16,6 +16,7 @@ export const Route = createFileRoute("/admin")({
 const navItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/tests", label: "Tests", icon: FlaskConical },
+  { to: "/admin/test-profiles", label: "Test Profiles", icon: FlaskConical },
   { to: "/admin/gallery", label: "Gallery", icon: ImageIcon },
   { to: "/admin/patients", label: "Patient Access", icon: Activity },
 ];

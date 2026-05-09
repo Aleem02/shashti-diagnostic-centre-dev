@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { UserPlus, FileUp, Loader2, CheckCircle2, Phone, User, TestTube } from "lucide-react";
 import { createOrUpdatePatient, uploadPatientReport, uploadReportToStorage } from "@/lib/patient-service";
@@ -20,6 +20,8 @@ function AdminPatientsPage() {
         <PatientLoginSection />
         <ReportUploadSection />
       </div>
+
+      <PatientListSection />
 
       <ManageReportsSection />
     </div>
@@ -105,8 +107,116 @@ function ManageReportsSection() {
   );
 }
 
-import { X, Clock } from "lucide-react";
-import { fetchPatientReports, deletePatientReport } from "@/lib/patient-service";
+import { X, Clock, Trash2, FileText, ArrowRight, Search } from "lucide-react";
+import { fetchPatientReports, deletePatientReport, fetchAllUsers, fetchAllReports, deletePatientUser } from "@/lib/patient-service";
+import { useEffect } from "react";
+
+function PatientListSection() {
+  const [data, setData] = useState<{ users: any[], reports: any[] }>({ users: [], reports: [] });
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [u, r] = await Promise.all([fetchAllUsers(), fetchAllReports()]);
+      setData({ users: u, reports: r });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleDeleteUser = async (phone: string) => {
+    if (!confirm(`Are you sure you want to delete patient ${phone}? This will NOT delete their uploaded reports, only their login access.`)) return;
+    try {
+      await deletePatientUser(phone);
+      setData(prev => ({ ...prev, users: prev.users.filter(u => u.phone !== phone) }));
+    } catch (err) {
+      alert("Delete failed.");
+    }
+  };
+
+  const getReportCount = (phone: string) => {
+    return data.reports.filter(r => r.phone === phone).length;
+  };
+
+  const filteredUsers = data.users.filter(u => 
+    u.phone.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <section className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-600">
+            <User className="h-5 w-5" />
+          </div>
+          <h2 className="font-display text-xl font-bold">Registered Patient List</h2>
+        </div>
+        
+        <div className="flex flex-1 max-w-md items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input 
+              type="text" 
+              placeholder="Search patients..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-xl border border-border bg-secondary/20 pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            />
+          </div>
+          <div className="flex items-center gap-4">
+            <button onClick={loadData} className="text-xs font-semibold text-primary hover:underline whitespace-nowrap">Refresh List</button>
+            {data.users.length > 9 && (
+              <Link to="/admin/patients/all" className="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-2 text-xs font-bold hover:bg-secondary/80 transition whitespace-nowrap">
+                View All <ArrowRight className="h-3 w-3" />
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="text-center py-10 text-muted-foreground text-sm italic">
+          {searchTerm ? "No patients found matching your search." : "No patients registered yet."}
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredUsers.slice(0, 9).map(u => (
+            <div key={u.id} className="flex items-center justify-between p-4 rounded-2xl border border-border bg-secondary/10 group hover:border-primary/20 transition-all">
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-full bg-background border border-border flex items-center justify-center text-xs font-bold text-muted-foreground">
+                  {u.phone.slice(-2)}
+                </div>
+                <div>
+                  <div className="font-bold text-sm">{u.phone}</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                    <FileText className="h-3 w-3" /> {getReportCount(u.phone)} Reports
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={() => handleDeleteUser(u.phone)}
+                className="p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                title="Remove Access"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
 
 function PatientLoginSection() {
   const [phone, setPhone] = useState("");

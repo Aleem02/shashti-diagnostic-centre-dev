@@ -1,10 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Plus } from "lucide-react";
-import heroImage from "@/assets/hero-editorial.jpg";
+import { ArrowUpRight, Plus, Shield, Microscope, Activity, Clock, Zap, Home, UserCheck } from "lucide-react";
+import heroImage from "@/assets/hero-lab-new.png";
 import { TESTIMONIALS } from "@/lib/seed-data";
 import { CONTACT_PHONE } from "@/lib/contact";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/lib/i18n.tsx";
+import card24h from "@/assets/card-24h.png";
+import cardReports from "@/assets/card-reports.png";
+import cardCollection from "@/assets/card-collection.png";
+import cardPathologist from "@/assets/card-pathologist.png";
+import { FeaturedPackages } from "@/components/FeaturedPackages";
+import { Certifications } from "@/components/Certifications";
+import logo from "@/assets/logo.png";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -36,6 +44,13 @@ const stats = [
   { v: "98%", l: "Reports on time" },
 ];
 
+const serviceCards = [
+  { img: card24h, titleKey: "card_24h_title", descKey: "card_24h_desc", icon: Clock, color: "oklch(0.65 0.12 210)" },
+  { img: cardReports, titleKey: "card_reports_title", descKey: "card_reports_desc", icon: Zap, color: "oklch(0.78 0.12 55)" },
+  { img: cardCollection, titleKey: "card_collection_title", descKey: "card_collection_desc", icon: Home, color: "oklch(0.55 0.15 155)" },
+  { img: cardPathologist, titleKey: "card_pathologist_title", descKey: "card_pathologist_desc", icon: UserCheck, color: "oklch(0.45 0.12 195)" },
+];
+
 function HomePage() {
   const { t, language } = useLanguage();
 
@@ -57,7 +72,6 @@ function HomePage() {
     <div className="relative">
       {/* ── HERO ───────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-gradient-warm">
-
         <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-20 lg:pt-10 lg:pb-32">
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-12 lg:items-center">
             <motion.div 
@@ -66,6 +80,9 @@ function HomePage() {
               transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
               className="lg:col-span-7 flex flex-col justify-center"
             >
+              <div className="mb-6">
+                <img src={logo} alt="Shashti Logo" className="h-20 sm:h-24 object-contain" />
+              </div>
               <div className="font-mono text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
                 {t("hero_tag")}
               </div>
@@ -109,15 +126,15 @@ function HomePage() {
                 <div className="absolute -bottom-3 -right-3 h-3 w-3 border-r border-b border-foreground/30" />
                 <img
                   src={heroImage}
-                  alt="Laboratory entrance with warm lighting"
+                  alt="Modern Laboratory Diagnostics"
                   width={1080}
                   height={1600}
-                  className="w-full h-[520px] sm:h-[640px] object-cover grayscale-0"
+                  className="w-full h-[520px] sm:h-[640px] object-cover rounded-sm"
                 />
                 <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between bg-background/85 backdrop-blur-sm border hairline px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.2em]">
                   <span>Plate N° 001</span>
                   <span className="text-accent">●</span>
-                  <span>Hematology Suite</span>
+                  <span>Advanced Diagnostics</span>
                 </div>
               </div>
             </motion.div>
@@ -136,18 +153,24 @@ function HomePage() {
         </div>
       </section>
 
+      {/* ── FEATURED PACKAGES ────────────────────────── */}
+      <FeaturedPackages />
+
       {/* ── ETHOS / STATS ──────────────────────────────── */}
       <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-24 lg:py-32">
-        <div className="grid gap-12 lg:grid-cols-12">
+        <div className="grid gap-12 lg:gap-20 lg:grid-cols-12">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="lg:col-span-4"
+            className="lg:col-span-5"
           >
             <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground">{t("ethos_tag")}</div>
-            <h2 className="mt-5 font-display text-4xl lg:text-5xl leading-[1.05] tracking-tight">
+            <h2 className={cn(
+              "mt-5 font-display leading-[1.05] tracking-tight",
+              language === "ta" ? "text-3xl lg:text-4xl" : "text-4xl lg:text-5xl"
+            )}>
               {t("ethos_title_1")}<br /><span className="serif-italic">{t("ethos_title_2")}</span><br />{t("ethos_title_3")}
             </h2>
           </motion.div>
@@ -156,9 +179,12 @@ function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="lg:col-span-8"
+            className="lg:col-span-7"
           >
-            <p className="font-display text-2xl lg:text-3xl leading-snug text-foreground/85 max-w-2xl">
+            <p className={cn(
+              "font-display leading-snug text-foreground/85 max-w-2xl",
+              language === "ta" ? "text-xl lg:text-2xl" : "text-2xl lg:text-3xl"
+            )}>
               {t("ethos_desc")}
             </p>
             <div className="mt-12 grid grid-cols-2 gap-px bg-border md:grid-cols-4">
@@ -170,6 +196,74 @@ function HomePage() {
               ))}
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ── SERVICE TICKER CARDS ──────────────────────── */}
+      <section className="bg-muted/20 py-24 lg:py-32">
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-16 text-center"
+          >
+            <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">Core Strengths</div>
+            <h2 className="font-display text-4xl lg:text-5xl leading-tight">Elevating the standard of <span className="serif-italic">diagnostic care</span>.</h2>
+          </motion.div>
+
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {serviceCards.map((card, i) => (
+              <motion.div
+                key={card.titleKey}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: i * 0.15, ease: [0.21, 1, 0.36, 1] }}
+                whileHover={{ y: -12 }}
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-background shadow-soft transition-all duration-500 hover:shadow-elevated"
+              >
+                <div className="aspect-[16/10] overflow-hidden relative">
+                  <img
+                    src={card.img}
+                    alt={t(card.titleKey)}
+                    className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110 group-hover:brightness-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <div className="absolute bottom-4 left-4 transform translate-y-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                    <card.icon className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+
+                <div className="flex-1 p-6 relative">
+                  {/* Decorative index */}
+                  <div className="absolute top-6 right-6 font-mono text-[10px] text-muted-foreground/30">0{i + 1}</div>
+                  
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-muted/30 mb-4 transition-colors duration-500 group-hover:bg-accent/10">
+                    <card.icon className="h-5 w-5 text-muted-foreground transition-colors duration-500 group-hover:text-accent" />
+                  </div>
+                  
+                  <h3 className="font-display text-2xl tracking-tight text-foreground mb-3 group-hover:text-accent transition-colors duration-500">
+                    {t(card.titleKey)}
+                  </h3>
+                  <p className="text-[14px] text-muted-foreground leading-relaxed group-hover:text-foreground/80 transition-colors duration-500">
+                    {t(card.descKey)}
+                  </p>
+                  
+                  <div className="mt-6 pt-4 border-t border-border/50 flex items-center justify-between">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground/60">Verified Standard</span>
+                    <ArrowUpRight className="h-4 w-4 text-muted-foreground/40 transition-all duration-500 group-hover:text-accent group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </div>
+                </div>
+                
+                {/* Accent glow on hover */}
+                <div 
+                  className="absolute bottom-0 left-0 h-1 w-0 bg-accent transition-all duration-700 group-hover:w-full"
+                  style={{ backgroundColor: card.color }}
+                />
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -216,6 +310,9 @@ function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── ACCREDITATIONS ─────────────────────────────── */}
+      <Certifications />
 
       {/* ── TESTIMONIALS ───────────────────────────────── */}
       <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-24 lg:py-32">

@@ -131,3 +131,29 @@ export async function fetchPatientReports(phone: string): Promise<PatientReport[
     throw err;
   }
 }
+
+export async function fetchAllUsers(): Promise<any[]> {
+  if (!db) return [];
+  const snap = await getDocs(collection(db, "users"));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function fetchAllReports(): Promise<any[]> {
+  if (!db) return [];
+  const snap = await getDocs(collection(db, "reports"));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+export async function checkUserExists(phone: string): Promise<boolean> {
+  if (!db) return false;
+  const cleanPhone = phone.replace(/\s+/g, "");
+  const userRef = doc(db, "users", cleanPhone);
+  const snap = await getDoc(userRef);
+  return snap.exists();
+}
+
+export async function deletePatientUser(phone: string): Promise<void> {
+  if (!db) return;
+  const cleanPhone = phone.replace(/\s+/g, "");
+  await deleteDoc(doc(db, "users", cleanPhone));
+}

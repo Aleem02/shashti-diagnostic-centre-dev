@@ -7,11 +7,22 @@ export interface MedicalTest {
   description: string;
   availability: Availability;
   duration: string;
-  category: string;
-  sampleReportUrl?: string;
-  price?: number;
-  discountPrice?: number;
+  category?: string;
+  slug: string;
+  biomarkers?: string[];
+  image?: string;
+  sampleReportUrl?: string | null;
+  price?: number | null;
+  discountPrice?: number | null;
   hidePrice?: boolean;
+  requirements?: string[];
+  featured?: boolean;
+}
+
+export interface TestProfile extends Omit<MedicalTest, 'category' | 'biomarkers'> {
+  includedTests?: string[];
+  category: string; // Keep category for consistency or filtering
+  requirements?: string[];
 }
 
 export interface GalleryImage {
@@ -35,18 +46,9 @@ export interface PatientReport {
   createdAt: any;
 }
 
-export const SEED_TESTS: MedicalTest[] = [
-  { id: "1", name: "Complete Blood Count (CBC)", description: "Comprehensive blood analysis covering RBC, WBC, hemoglobin and platelets.", availability: "Both", duration: "24 hrs", category: "Blood" },
-  { id: "2", name: "Thyroid Profile (T3, T4, TSH)", description: "Evaluates thyroid gland function and detects hypo/hyperthyroidism.", availability: "Both", duration: "24 hrs", category: "Thyroid" },
-  { id: "3", name: "Lipid Profile", description: "Measures cholesterol, triglycerides, HDL & LDL for heart health.", availability: "Both", duration: "24 hrs", category: "Blood" },
-  { id: "4", name: "ECG (Electrocardiogram)", description: "Records electrical activity of the heart to detect cardiac issues.", availability: "Lab", duration: "Same day", category: "ECG" },
-  { id: "5", name: "EEG (Electroencephalogram)", description: "Brain wave analysis to evaluate neurological conditions.", availability: "Lab", duration: "48 hrs", category: "EEG" },
-  { id: "6", name: "Allergy Panel Test", description: "Identifies common food, dust and environmental allergens.", availability: "Both", duration: "48 hrs", category: "Allergy" },
-  { id: "7", name: "Diabetes Screening (HbA1c)", description: "3-month average blood glucose for diabetes monitoring.", availability: "Both", duration: "24 hrs", category: "Blood" },
-  { id: "8", name: "Liver Function Test (LFT)", description: "Assesses liver enzymes, bilirubin and protein levels.", availability: "Both", duration: "24 hrs", category: "Blood" },
-  { id: "9", name: "Kidney Function Test (KFT)", description: "Checks creatinine, urea and electrolytes for kidney health.", availability: "Both", duration: "24 hrs", category: "Blood" },
-  { id: "10", name: "Vitamin D & B12", description: "Detects vitamin deficiencies affecting bones and energy.", availability: "Both", duration: "48 hrs", category: "Blood" },
-];
+export const SEED_TESTS: MedicalTest[] = [];
+
+export const SEED_PROFILES: TestProfile[] = [];
 
 export const SEED_GALLERY: GalleryImage[] = [
   { id: "1", url: "https://images.unsplash.com/photo-1579154204601-01588f351e67?w=900", caption: "Modern Diagnostic Lab" },
@@ -60,10 +62,10 @@ export const SEED_GALLERY: GalleryImage[] = [
 ];
 
 export const TESTIMONIALS = [
-  { name: "Priya Ramesh", role: "Patient, Chidambaram", text: "Excellent service! The home collection team was punctual and very professional. Reports came in faster than promised.", rating: 5 },
-  { name: "Dr. Karthik S.", role: "Local Physician", text: "I refer my patients here for accurate diagnostics. Their reporting standard and turnaround time is consistently reliable.", rating: 5 },
-  { name: "Lakshmi Narayanan", role: "Senior Citizen", text: "Caring staff and transparent pricing. Booking a thyroid test was effortless and the result explanation was clear.", rating: 5 },
-  { name: "Anand Kumar", role: "Patient", text: "Open 24/7 was a lifesaver during an emergency ECG. Calm, clean environment and zero waiting time.", rating: 5 },
+  { name: "Maha Lakshmi. B", role: "Patient, Chidambaram", text: "I have done my fertility test at shashti diagnostic center and they gave me the report within 3 hours. In all the centers they said they will give the report next day but only in this center they gave it within three hours.Best diagnostic center in Chidambaram.Staffs are very response nd well experienced. Reasonable price. Truly satisfied.", rating: 5 },
+  { name: "Pramodh SS", role: "Patient, Chidambaram", text: "I highly recommend this diagnostic center for anyone in need of medical tests. The staff was courteous and knowledgeable, and they made the entire process seamless. The facility was clean, and I felt reassured by the professionalism of the team.", rating: 5 },
+  { name: "LENA NEWEL", role: "Patient, Chidambaram", text: "Shashti diagnostic center should have a qualified medical staff to handle your health issues. The center should have experienced and skilled radiologists, pathologists, surgeons, and other medical professionals.", rating: 5 },
+  { name: "navas deen", role: "Patient", text: "Good Response and Very Supportive and they provide Pre employment medical fitness report for all countries and guide very well.", rating: 5 },
 ];
 
-export const TEST_CATEGORIES = ["All", "Blood", "Thyroid", "ECG", "EEG", "Allergy"];
+export const TEST_CATEGORIES = ["All", "Tests", "Test Profiles"];

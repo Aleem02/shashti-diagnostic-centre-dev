@@ -1,12 +1,13 @@
 import { useNavigate, Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Search, Menu, X, Phone, ArrowUpRight } from "lucide-react";
+import { Search, Menu, X, Phone, ArrowUpRight, Instagram } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CONTACT_PHONE, getWhatsAppLink } from "@/lib/contact";
-import { fetchTests } from "@/lib/tests-service";
-import { type MedicalTest } from "@/lib/seed-data";
+import { CONTACT_PHONE, getWhatsAppLink, INSTAGRAM_URL } from "@/lib/contact";
+import { fetchTests, fetchTestProfiles } from "@/lib/tests-service";
+import { type MedicalTest, type TestProfile } from "@/lib/seed-data";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/lib/i18n.tsx";
+import logo from "@/assets/logo.png";
 
 const links = [
   { to: "/", label: "Index", num: "01" },
@@ -23,7 +24,7 @@ export function Navbar() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [tests, setTests] = useState<MedicalTest[]>([]);
+  const [items, setItems] = useState<(MedicalTest | TestProfile)[]>([]);
   const [showResults, setShowResults] = useState(false);
 
   const navLinks = [
@@ -36,7 +37,9 @@ export function Navbar() {
   ];
 
   useEffect(() => {
-    fetchTests().then(setTests);
+    Promise.all([fetchTests(), fetchTestProfiles()]).then(([t, p]) => {
+      setItems([...t, ...p]);
+    });
   }, []);
 
   useEffect(() => {
@@ -52,11 +55,11 @@ export function Navbar() {
 
   const results = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    return tests.filter(t => 
+    return items.filter(t => 
       t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.category.toLowerCase().includes(searchQuery.toLowerCase())
+      (t as any).category?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }, [searchQuery, tests]);
+  }, [searchQuery, items]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,8 +71,8 @@ export function Navbar() {
     }
   };
 
-  const handleResultClick = (query: string) => {
-    navigate({ to: "/services", search: { q: query } });
+  const handleResultClick = (slugOrId: string) => {
+    navigate({ to: `/services/${slugOrId}` });
     setSearchQuery("");
     setShowResults(false);
     setOpen(false);
@@ -86,14 +89,11 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b hairline bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-5 sm:px-8">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="relative flex h-9 w-9 items-center justify-center rounded-full border border-foreground/80 text-foreground">
-            <span className="font-display text-[15px] italic font-medium leading-none">S</span>
-            <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-accent animate-shimmer" />
-          </div>
-          <div className="leading-tight">
-            <div className="font-display text-[15px] font-medium tracking-tight text-foreground">Shashti</div>
-            <div className="text-[11px] font-sans font-semibold uppercase tracking-wider text-muted-foreground">Diagnostic · Est. 2014</div>
-          </div>
+          <img 
+            src={logo} 
+            alt="Shashti Diagnostic Centre" 
+            className="h-10 sm:h-14 w-auto object-contain transition-transform group-hover:scale-105 mix-blend-multiply" 
+          />
         </Link>
 
         <nav className="hidden xl:flex items-center gap-0.5">
@@ -148,7 +148,7 @@ export function Navbar() {
                   {results.slice(0, 5).map((r) => (
                     <button
                       key={r.id}
-                      onClick={() => handleResultClick(r.name)}
+                      onClick={() => handleResultClick(r.slug || r.id)}
                       className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-[12px] hover:bg-secondary transition-colors"
                     >
                       <span className="truncate pr-4">{r.name}</span>
@@ -200,9 +200,6 @@ export function Navbar() {
           </div>
 
           <div className="hidden xl:flex items-center gap-6">
-            <a href={`tel:${CONTACT_PHONE.replace(/\s/g, "")}`} className="flex items-center gap-1.5 text-[11px] font-sans font-bold uppercase tracking-wide text-foreground/80 hover:text-foreground transition-colors whitespace-nowrap">
-              <Phone className="h-3 w-3" /> {CONTACT_PHONE}
-            </a>
             <a href={getWhatsAppLink("Hello Shashti Diagnostic Center, I would like to book a visit.")} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-2 rounded-full border border-foreground bg-foreground px-4 py-2 text-[11px] font-medium uppercase tracking-wider text-background hover:bg-transparent hover:text-foreground transition-colors whitespace-nowrap cursor-pointer">
               {t("cta_book_visit") || "Book a Visit"}
             </a>
@@ -251,7 +248,7 @@ export function Navbar() {
                         {results.slice(0, 5).map((r) => (
                           <button
                             key={r.id}
-                            onClick={() => handleResultClick(r.name)}
+                            onClick={() => handleResultClick(r.slug || r.id)}
                             className="flex w-full items-center justify-between rounded-md px-4 py-3 text-left text-sm border-b last:border-0 hairline"
                           >
                             <span>{r.name}</span>
@@ -296,6 +293,17 @@ export function Navbar() {
                 <a href={getWhatsAppLink("Hello Shashti Diagnostic Center, I would like to book a visit.")} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} className="mt-3 block rounded-full border border-foreground bg-foreground px-4 py-2.5 text-center text-xs font-medium uppercase tracking-wider text-background cursor-pointer">
                   {t("cta_book_visit") || "Book a Visit"}
                 </a>
+                
+                <div className="pt-6 flex items-center justify-center gap-6">
+                  <a 
+                    href={INSTAGRAM_URL} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-foreground/10 text-foreground/50 hover:text-accent hover:border-accent transition-all"
+                  >
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                </div>
               </div>
             </div>
           </motion.div>

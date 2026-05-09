@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight } from "lucide-react";
-import { CONTACT_PHONE } from "@/lib/contact";
+import { ArrowUpRight, Instagram } from "lucide-react";
+import { CONTACT_PHONE, INSTAGRAM_URL } from "@/lib/contact";
 import { useLanguage } from "@/lib/i18n.tsx";
 
 export function Footer() {
@@ -19,6 +19,16 @@ export function Footer() {
               <p className="mt-5 max-w-md text-sm text-background/65 leading-relaxed">
                 {t("footer_desc")}
               </p>
+              <div className="mt-6 flex items-center gap-4">
+                <a 
+                  href={INSTAGRAM_URL} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="group flex h-10 w-10 items-center justify-center rounded-full border border-background/20 hover:border-accent hover:bg-accent hover:text-accent-foreground transition-all duration-500"
+                >
+                  <Instagram className="h-4 w-4" />
+                </a>
+              </div>
             </div>
             <Link to="/contact" className="group inline-flex items-center gap-3 rounded-full border border-background/30 px-6 py-3 text-xs font-mono uppercase tracking-wider hover:bg-background hover:text-foreground transition-colors cursor-pointer">
               {t("cta_schedule")} <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
@@ -29,21 +39,21 @@ export function Footer() {
         {/* Columns */}
         <div className="grid gap-12 py-14 md:grid-cols-2 lg:grid-cols-4">
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">A · Address</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">A · {t("contact_visit")}</div>
             <p className="mt-4 text-sm leading-relaxed text-background/85">
-              Laya Complex<br />S.P Kovil Street<br />Chidambaram, Tamil Nadu 608001
+              {t("footer_address")}
             </p>
           </div>
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">B · Reach</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">B · {t("contact_call")}</div>
             <ul className="mt-4 space-y-2 text-sm text-background/85">
               <li><a href={`tel:${CONTACT_PHONE.replace(/\s/g, "")}`} className="hover:text-accent">{CONTACT_PHONE}</a></li>
               <li><a href="mailto:info@shashtidiagnostic.in" className="hover:text-accent">info@shashtidiagnostic.in</a></li>
-              <li className="text-background/55 text-xs font-mono uppercase tracking-wider mt-2">Open 24 / 7 · 365</li>
+              <li className="text-background/55 text-xs font-mono uppercase tracking-wider mt-2">{t("contact_open_always")}</li>
             </ul>
           </div>
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">C · Wander</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">C · {t("nav_services")}</div>
             <ul className="mt-4 space-y-2 text-sm">
               {[
                 { to: "/services", label: t("nav_services") },
@@ -57,9 +67,9 @@ export function Footer() {
             </ul>
           </div>
           <div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">D · Promise</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">D · {t("about_pillars_tag").split(" · ")[1]}</div>
             <p className="mt-4 text-sm text-background/85 leading-relaxed">
-              {t("footer_promise") || "Same-day reports. Doorstep collection. No hidden charges."}
+              {t("footer_promise")}
             </p>
           </div>
         </div>
