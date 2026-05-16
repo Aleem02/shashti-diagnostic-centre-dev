@@ -7,20 +7,11 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  cloudflare: false,
   vite: {
-    ssr: {
-      noExternal: ['framer-motion', 'lucide-react']
-    },
+    ssr: false, // Force SPA mode for Vercel
     build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-            'framer-motion': ['framer-motion'],
-            'lucide': ['lucide-react']
-          }
-        }
-      }
+      // Removed manualChunks to avoid SSR external module collision on Vercel
     }
   }
 });
