@@ -37,6 +37,7 @@ function AdminTestProfiles() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filterFeatured, setFilterFeatured] = useState<boolean | null>(null); // null means all
 
   const refresh = () => { 
     setLoading(true); 
@@ -81,10 +82,12 @@ function AdminTestProfiles() {
     }
   };
 
-  const filteredProfiles = profiles.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProfiles = profiles.filter(p => {
+    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        p.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = filterFeatured === null || p.featured === filterFeatured;
+    return matchesSearch && matchesFilter;
+  });
 
   return (
     <div>
@@ -94,16 +97,41 @@ function AdminTestProfiles() {
           <p className="mt-1 text-sm text-muted-foreground">{profiles.length} profiles in catalog</p>
         </div>
         
-        <div className="flex-1 max-w-md relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input 
-            type="text"
-            placeholder="Search packages by name or info..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-card text-sm focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all"
-          />
+        <div className="flex flex-1 max-w-2xl gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input 
+              type="text"
+              placeholder="Search packages by name or info..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-card text-sm focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all"
+            />
+          </div>
+          
+          <div className="flex rounded-xl border border-border bg-card p-1">
+            <button
+              onClick={() => setFilterFeatured(null)}
+              className={cn(
+                "px-3 py-1.5 text-xs font-bold rounded-lg transition-all",
+                filterFeatured === null ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary"
+              )}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setFilterFeatured(true)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all",
+                filterFeatured === true ? "bg-amber-500/10 text-amber-600" : "text-muted-foreground hover:bg-secondary"
+              )}
+            >
+              <Star className={cn("h-3 w-3", filterFeatured === true && "fill-amber-500")} />
+              Featured
+            </button>
+          </div>
         </div>
+
         <div className="flex gap-2">
           {selectedIds.length > 0 && (
             <button onClick={onBulkDelete} disabled={isBulkDeleting}

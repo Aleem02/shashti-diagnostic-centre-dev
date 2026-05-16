@@ -9,7 +9,7 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About — Shashti Diagnostic Center, Chidambaram" },
-      { name: "description", content: "The principles, people and practice behind Shashti — a precision diagnostic center in Chidambaram since 2014." },
+      { name: "description", content: "The principles, people and practice behind Shashti — a precision diagnostic center in Chidambaram." },
       { property: "og:title", content: "About — Shashti Diagnostic" },
       { property: "og:description", content: "Diagnostics held to a higher standard. Our story, our principles." },
     ],
@@ -36,7 +36,7 @@ function AboutPage() {
           </h1>
           <div className="mt-10 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
             <MapPin className="h-3.5 w-3.5" />
-            Laya Complex · S.P Kovil Street · Chidambaram
+            No:24/27 · Laya complex · OLD M.A.T Lodge · Sp Kovil Street · Chidambaram
           </div>
         </div>
       </section>

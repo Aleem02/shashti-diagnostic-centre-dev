@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Instagram } from "lucide-react";
-import { CONTACT_PHONE, INSTAGRAM_URL } from "@/lib/contact";
+import { CONTACT_PHONE, CONTACT_LANDLINE, INSTAGRAM_URL } from "@/lib/contact";
 import { useLanguage } from "@/lib/i18n.tsx";
 
 export function Footer() {
@@ -48,8 +48,11 @@ export function Footer() {
             <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-background/45">B · {t("contact_call")}</div>
             <ul className="mt-4 space-y-2 text-sm text-background/85">
               <li><a href={`tel:${CONTACT_PHONE.replace(/\s/g, "")}`} className="hover:text-accent">{CONTACT_PHONE}</a></li>
-              <li><a href="mailto:info@shashtidiagnostic.in" className="hover:text-accent">info@shashtidiagnostic.in</a></li>
-              <li className="text-background/55 text-xs font-mono uppercase tracking-wider mt-2">{t("contact_open_always")}</li>
+              <li><a href={`tel:${CONTACT_LANDLINE.replace(/\s/g, "")}`} className="hover:text-accent">{CONTACT_LANDLINE}</a></li>
+              <li><a href="mailto:shashtidiagnostic.cdm@gmail.com" className="hover:text-accent">shashtidiagnostic.cdm@gmail.com</a></li>
+              <li className="text-background/55 text-xs font-mono uppercase tracking-wider mt-2 flex items-center gap-1.5">
+                <span className="text-red-500 font-bold">24/7</span> · 365 DAYS A YEAR
+              </li>
             </ul>
           </div>
           <div>

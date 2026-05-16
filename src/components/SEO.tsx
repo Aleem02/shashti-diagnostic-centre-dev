@@ -67,7 +67,8 @@ export const organizationSchema = {
   "priceRange": "₹₹",
   "contactPoint": {
     "@type": "ContactPoint",
-    "telephone": "+91 99999 99999", // Replace with real phone
+    "telephone": ["+91 96267 89520", "04144 796945"], 
+    "email": "shashtidiagnostic.cdm@gmail.com",
     "contactType": "customer service",
     "areaServed": {
       "@type": "State",
@@ -77,7 +78,7 @@ export const organizationSchema = {
   },
   "address": {
     "@type": "PostalAddress",
-    "streetAddress": "Laya Complex, S.P Kovil Street",
+    "streetAddress": "No:24/27, Laya complex, OLD M.A.T Lodge, Sp Kovil Street",
     "addressLocality": "Chidambaram",
     "addressRegion": "Tamil Nadu",
     "postalCode": "608001",

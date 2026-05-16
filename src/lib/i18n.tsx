@@ -20,7 +20,7 @@ export const translations: Translations = {
   nav_gallery: { en: "Gallery", ta: "புகைப்படங்கள்" },
 
   // Hero
-  hero_tag: { en: "A Diagnostic Center · Est. 2014", ta: "பரிசோதனை மையம் · ஆரம்பம் 2014" },
+  hero_tag: { en: "A Precision Diagnostic Center", ta: "துல்லியமான பரிசோதனை மையம்" },
   hero_title_1: { en: "Precision,", ta: "துல்லியம்," },
   hero_title_2: { en: "delivered with", ta: "கனிவான" },
   hero_title_3: { en: "quiet care", ta: "கவனிப்புடன்" },
@@ -32,10 +32,11 @@ export const translations: Translations = {
   cta_explore: { en: "Explore Services", ta: "சேவைகளைப் பார்க்க" },
   cta_book_home: { en: "Book Home Collection", ta: "வீட்டிற்கே வந்து சேகரிப்பு" },
   cta_book_visit: { en: "Book a Visit", ta: "முன்பதிவு செய்க" },
+  cta_download_report: { en: "Download Report", ta: "அறிக்கையைப் பதிவிறக்குக" },
 
   // Stats
   stat_reports: { en: "Reports delivered", ta: "வழங்கப்பட்ட அறிக்கைகள்" },
-  stat_years: { en: "Years in practice", ta: "ஆண்டு கால அனுபவம்" },
+  stat_years: { en: "Expertise & Care", ta: "நிபுணத்துவம் மற்றும் கவனிப்பு" },
   stat_open: { en: "Always open", ta: "எப்போதும் திறந்திருக்கும்" },
   stat_ontime: { en: "Reports on time", ta: "சரியான நேரத்திற்கு அறிக்கைகள்" },
 
@@ -120,6 +121,8 @@ export const translations: Translations = {
   contact_call: { en: "Call", ta: "அழைக்க" },
   contact_write: { en: "Write", ta: "மின்னஞ்சல்" },
   contact_get_directions: { en: "Get directions", ta: "வழித்தடம்" },
+  contact_whatsapp_title_1: { en: "Or send us a", ta: "அல்லது எங்களுக்கு" },
+  contact_whatsapp_title_2: { en: "message", ta: "செய்தி அனுப்பவும்" },
   contact_whatsapp_title: { en: "Or send us a message", ta: "அல்லது எங்களுக்கு செய்தி அனுப்பவும்" },
   contact_whatsapp_btn: { en: "Chat on WhatsApp", ta: "வாட்ஸ்அப்பில் பேச" },
   contact_desc: { en: "Walk in any hour of the day or night. Or schedule a doorstep collection — we'll be there within the hour.", ta: "எந்த நேரமும் நேரில் வரலாம். அல்லது வீட்டிற்கே வரச் சொல்லலாம் — ஒரு மணி நேரத்திற்குள் நாங்கள் அங்கே இருப்போம்." },
@@ -161,10 +164,10 @@ export const translations: Translations = {
 
   // Footer
   footer_desc: { 
-    en: "A precision diagnostic center located in Chidambaram. Trusted by physicians, families, and night-shift emergencies for over a decade.",
-    ta: "சிதம்பரத்தில் அமைந்துள்ள ஒரு துல்லியமான ஆய்வக மையம். ஒரு தசாப்தத்திற்கும் மேலாக மருத்துவர்கள் மற்றும் குடும்பங்களால் நம்பப்படுகிறது."
+    en: "A precision diagnostic center located in Chidambaram. Trusted by physicians, families, and emergency care units.",
+    ta: "சிதம்பரத்தில் அமைந்துள்ள ஒரு துல்லியமான ஆய்வக மையம். மருத்துவர்கள், குடும்பங்கள் மற்றும் அவசர சிகிச்சை பிரிவுகளால் நம்பப்படுகிறது."
   },
-  footer_address: { en: "Laya Complex, S.P Kovil Street, Chidambaram", ta: "லயா காம்க்ளக்ஸ், எஸ்.பி கோவில் தெரு, சிதம்பரம்" },
+  footer_address: { en: "No:24/27, Laya complex, OLD M.A.T Lodge, Sp Kovil Street, Chidambaram-608001", ta: "எண்:24/27, லயா காம்ப்ளக்ஸ், பழைய எம்.ஏ.டி லாட்ஜ், எஸ்.பி கோவில் தெரு, சிதம்பரம்-608001" },
   footer_promise: { en: "Same-day reports. Doorstep collection. No hidden charges.", ta: "ஒரே நாளில் அறிக்கைகள். வீட்டிற்கே வந்து சேகரிப்பு. மறைமுகக் கட்டணங்கள் இல்லை." },
 
   // Service Cards

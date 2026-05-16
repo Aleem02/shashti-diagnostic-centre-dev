@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { MapPin, Phone, Mail, MessageCircle, ArrowUpRight } from "lucide-react";
-import { CONTACT_PHONE, getWhatsAppLink } from "@/lib/contact";
+import { CONTACT_PHONE, CONTACT_LANDLINE, getWhatsAppLink } from "@/lib/contact";
 import { useLanguage } from "@/lib/i18n.tsx";
 import { Breadcrumbs } from "@/components/SEO";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -19,9 +20,9 @@ export const Route = createFileRoute("/contact")({
 function ContactPage() {
   const { t } = useLanguage();
   const cards = [
-    { num: "I", icon: MapPin, label: t("contact_visit"), lines: ["Laya Complex,", "S.P Kovil Street,", "Chidambaram, Tamil Nadu"], cta: { href: "https://www.google.com/maps/place/SHASHTI+DIAGNOSTIC+CENTER/@11.3951255,79.6933382,17z/data=!3m1!4b1!4m6!3m5!1s0x3a54c3da9b033d09:0xca3643b5dd6846b3!8m2!3d11.3951255!4d79.6959131!16s%2Fg%2F11vwfj6r7t", label: t("contact_get_directions") } },
-    { num: "II", icon: Phone, label: t("contact_call"), lines: [CONTACT_PHONE, t("contact_open_always")], cta: { href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, label: t("contact_call_now") } },
-    { num: "III", icon: Mail, label: t("contact_write"), lines: ["info@shashtidiagnostic.in", t("contact_email_respond")], cta: { href: "mailto:info@shashtidiagnostic.in", label: t("contact_send_email") } },
+    { num: "I", icon: MapPin, label: t("contact_visit"), lines: ["No:24/27, Laya complex,", "OLD M.A.T Lodge, Sp Kovil Street,", "Chidambaram, Tamil Nadu"], cta: { href: "https://www.google.com/maps/place/SHASHTI+DIAGNOSTIC+CENTER/@11.3951255,79.6933382,17z/data=!3m1!4b1!4m6!3m5!1s0x3a54c3da9b033d09:0xca3643b5dd6846b3!8m2!3d11.3951255!4d79.6959131!16s%2Fg%2F11vwfj6r7t", label: t("contact_get_directions") } },
+    { num: "II", icon: Phone, label: t("contact_call"), lines: [CONTACT_PHONE, CONTACT_LANDLINE, t("contact_open_always")], cta: { href: `tel:${CONTACT_PHONE.replace(/\s/g, "")}`, label: t("contact_call_now") } },
+    { num: "III", icon: Mail, label: t("contact_write"), lines: ["shashtidiagnostic.cdm@gmail.com", t("contact_email_respond")], cta: { href: "mailto:shashtidiagnostic.cdm@gmail.com", label: t("contact_send_email") } },
   ];
 
   return (
@@ -39,20 +40,42 @@ function ContactPage() {
       </section>
 
       {/* Three columns */}
-      <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-12 lg:py-16">
-        <div className="grid gap-px bg-border lg:grid-cols-3">
+      <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-12 lg:py-24">
+        <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
           {cards.map((c) => (
-            <div key={c.label} className="bg-background p-8 lg:p-10 flex flex-col">
-              <div className="flex items-start justify-between">
-                <span className="font-display text-4xl serif-italic text-accent">{c.num}</span>
-                <c.icon className="h-5 w-5 text-foreground/50" strokeWidth={1.5} />
+            <div key={c.label} className="group relative bg-card p-10 lg:p-12 flex flex-col rounded-3xl border border-border shadow-soft hover:shadow-elevated hover:border-primary/20 transition-all duration-500 overflow-hidden">
+              {/* Background Accent Gradient */}
+              <div className="absolute -top-24 -right-24 h-48 w-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-500" />
+              
+              <div className="flex items-start justify-between relative z-10">
+                <div className="font-display text-5xl serif-italic text-accent/30 group-hover:text-accent transition-colors duration-500">{c.num}</div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary/50 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 shadow-sm group-hover:shadow-glow group-hover:-translate-y-1">
+                  <c.icon className="h-6 w-6" strokeWidth={1.5} />
+                </div>
               </div>
-              <div className="mt-10 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">{c.label}</div>
-              <div className="mt-3 font-display text-xl lg:text-2xl leading-snug">
-                {c.lines.map((l) => <div key={l}>{l}</div>)}
+
+              <div className="mt-12 relative z-10">
+                <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground mb-4">{c.label}</div>
+                <div className="font-display text-2xl lg:text-3xl leading-snug tracking-tight text-foreground/90">
+                  {c.lines.map((l, i) => (
+                    <div key={i} className={cn(i > 0 && "text-base lg:text-lg text-muted-foreground mt-1 font-sans font-normal tracking-normal")}>
+                      {l}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <a href={c.cta.href} target={c.cta.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer" className="group mt-auto pt-10 inline-flex items-center gap-2 text-xs font-mono uppercase tracking-wider hover:text-accent transition-colors">
-                {c.cta.label} <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:rotate-45" />
+
+              <a 
+                href={c.cta.href} 
+                target={c.cta.href.startsWith("http") ? "_blank" : undefined} 
+                rel="noopener noreferrer" 
+                className="group/btn mt-12 pt-8 border-t border-border inline-flex items-center gap-3 text-xs font-mono uppercase tracking-[0.2em] text-primary hover:text-accent transition-colors relative z-10"
+              >
+                <span className="relative overflow-hidden inline-block">
+                  <span className="inline-block transition-transform duration-300 group-hover/btn:-translate-y-full">{c.cta.label}</span>
+                  <span className="absolute left-0 top-0 inline-block translate-y-full transition-transform duration-300 group-hover/btn:translate-y-0 text-accent font-bold">{c.cta.label}</span>
+                </span>
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover/btn:rotate-45 group-hover/btn:scale-125" />
               </a>
             </div>
           ))}

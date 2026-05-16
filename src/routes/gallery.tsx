@@ -18,6 +18,8 @@ export const Route = createFileRoute("/gallery")({
   component: GalleryPage,
 });
 
+import { motion, AnimatePresence } from "framer-motion";
+
 function GalleryPage() {
   const { t } = useLanguage();
   const [images, setImages] = useState<GalleryImage[]>([]);
@@ -54,41 +56,70 @@ function GalleryPage() {
   return (
     <div>
       <section className="bg-gradient-warm">
-        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-16 lg:pt-10 lg:pb-20">
-          <Breadcrumbs />
+        <div className="mx-auto max-w-[1400px] px-5 sm:px-8 pt-6 pb-16 lg:pt-10 lg:pb-20 text-center lg:text-left">
+          <div className="flex justify-center lg:justify-start">
+            <Breadcrumbs />
+          </div>
           <h1 className="font-display text-5xl sm:text-7xl lg:text-[8rem] leading-[0.92] tracking-[-0.035em]">
             {t("gallery_tag_1")}<br /><span className="serif-italic">{t("gallery_tag_2")}</span><span className="text-accent">.</span>
           </h1>
-          <p className="mt-8 max-w-xl text-base text-muted-foreground leading-relaxed">
+          <p className="mt-8 mx-auto lg:mx-0 max-w-xl text-base text-muted-foreground leading-relaxed">
             {t("gallery_page_desc")}
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-12 lg:py-16">
+      <section className="mx-auto max-w-[1400px] px-5 sm:px-8 py-12 lg:py-24">
         {loading ? (
-          <div className="flex items-center justify-center py-20"><Loader2 className="h-5 w-5 animate-spin" /></div>
+          <div className="flex items-center justify-center py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {images.map((img, i) => (
-              <button
-                key={img.id}
-                onClick={() => setActive(img)}
-                className="group relative overflow-hidden bg-secondary aspect-[4/3] border hairline cursor-pointer"
-              >
-                <img
-                  src={img.url}
-                  alt={img.caption || "Gallery image"}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
-                />
-                <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors duration-500" />
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.2em] text-background opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <span className="bg-foreground/70 backdrop-blur px-2 py-1">N° {(i + 1).toString().padStart(3, "0")}</span>
-                  {img.caption && <span className="bg-foreground/70 backdrop-blur px-2 py-1 truncate max-w-[60%]">{img.caption}</span>}
-                </div>
-              </button>
-            ))}
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
+            <AnimatePresence mode="popLayout">
+              {images.map((img, i) => (
+                <motion.div
+                  key={img.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: i * 0.05, ease: [0.21, 1, 0.36, 1] }}
+                  className="break-inside-avoid"
+                >
+                  <button
+                    onClick={() => setActive(img)}
+                    className="group relative w-full overflow-hidden bg-secondary border hairline cursor-pointer rounded-sm shadow-soft hover:shadow-elevated transition-all duration-500"
+                  >
+                    <img
+                      src={img.url}
+                      alt={img.caption || "Gallery image"}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-[1200ms] cubic-bezier(0.2, 1, 0.2, 1) group-hover:scale-110"
+                    />
+                    {/* Premium Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    
+                    <div className="absolute inset-0 flex flex-col justify-end p-6 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0">
+                      <div className="font-mono text-[9px] uppercase tracking-[0.3em] text-accent mb-2">Exhibition · {(i + 1).toString().padStart(3, "0")}</div>
+                      {img.caption && (
+                        <div className="font-display text-xl text-white tracking-tight leading-tight">
+                          {img.caption}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Corner accents */}
+                    <div className="absolute top-4 right-4 h-5 w-5 border-r border-t border-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+            
+            {images.length === 0 && (
+              <div className="col-span-full py-32 text-center">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Gallery is empty</div>
+              </div>
+            )}
           </div>
         )}
       </section>
